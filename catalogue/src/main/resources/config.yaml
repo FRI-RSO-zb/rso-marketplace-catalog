@@ -1,0 +1,20 @@
+kumuluzee:
+  name: catalogue
+  env:
+    name: dev
+  version: 1.0.0
+  server:
+    base-url: http://localhost:8080
+    http:
+      port: 8080
+  openapi:
+    enabled: true
+    ui:
+      enabled: true
+  datasources:
+    - jndi-name: jdbc/MarketplaceCatalogueDS
+      connection-url: jdbc:postgres://vqmyhneq:OWxoZ6iyUrw4zZzOStHjYw9vhlJmyGby@cornelius.db.elephantsql.com/vqmyhneq
+#      connection-url: jdbc:postgresql://localhost:5432/image-metadata
+      username: vqmyhneq
+      password: OWxoZ6iyUrw4zZzOStHjYw9vhlJmyGby
+      max-pool-size: 20

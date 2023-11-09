@@ -10,4 +10,72 @@
   <artifactId>catalogue</artifactId>
   <name>Archetype - catalogue</name>
   <url>http://maven.apache.org</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.kumuluz.ee</groupId>
+      <artifactId>kumuluzee-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.kumuluz.ee</groupId>
+      <artifactId>kumuluzee-servlet-jetty</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.kumuluz.ee</groupId>
+      <artifactId>kumuluzee-jax-rs-jersey</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.kumuluz.ee</groupId>
+      <artifactId>kumuluzee-cdi-weld</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.kumuluz.ee.config</groupId>
+      <artifactId>kumuluzee-config-mp</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.kumuluz.ee.openapi</groupId>
+      <artifactId>kumuluzee-openapi-mp</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.kumuluz.ee.openapi</groupId>
+      <artifactId>kumuluzee-openapi-mp-ui</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-web-api</artifactId>
+      <version>6.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>2.1.6</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.kumuluz.ee</groupId>
+        <artifactId>kumuluzee-maven-plugin</artifactId>
+        <version>${kumuluzee.version}</version>
+        <executions>
+          <execution>
+            <id>package</id>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
