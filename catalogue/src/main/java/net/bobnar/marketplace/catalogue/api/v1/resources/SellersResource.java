@@ -1,4 +1,4 @@
-package net.bobnar.marketplace.catalogue.resources;
+package net.bobnar.marketplace.catalogue.api.v1.resources;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;

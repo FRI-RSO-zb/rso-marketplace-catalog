@@ -1,4 +1,4 @@
-package net.bobnar.marketplace.catalogue;
+package net.bobnar.marketplace.catalogue.api.v1;
 
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.info.Contact;

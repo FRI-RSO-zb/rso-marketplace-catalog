@@ -62,6 +62,14 @@
       </dependency>
 
       <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgresql.version}</version>
+      </dependency>
+
+
+
+      <dependency>
         <groupId>net.bobnar.marketplace</groupId>
         <artifactId>catalogue</artifactId>
         <version>${project.version}</version>
