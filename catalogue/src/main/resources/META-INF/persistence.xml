@@ -4,8 +4,8 @@
     <persistence-unit name="marketplace-catalogue-jpa" transaction-type="RESOURCE_LOCAL">
         <non-jta-data-source>jdbc/MarketplaceCatalogueDS</non-jta-data-source>
 
-        <class>net.bobnar.marketplace.catalogue.entities.Ad</class>
-        <class>net.bobnar.marketplace.catalogue.entities.Seller</class>
+        <class>net.bobnar.marketplace.catalogue.entities.AdEntity</class>
+        <class>net.bobnar.marketplace.catalogue.entities.SellerEntity</class>
 
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>

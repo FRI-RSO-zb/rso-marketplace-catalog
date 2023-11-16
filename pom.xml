@@ -11,7 +11,6 @@
   <modules>
     <module>catalogue</module>
     <module>loader-agent</module>
-    <module>models</module>
   </modules>
 
   <properties>
@@ -25,6 +24,8 @@
     <kumuluzee-config-mp.version>2.0.0</kumuluzee-config-mp.version>
     <kumuluzee-swagger.version>1.2.1</kumuluzee-swagger.version>
     <postgresql.version>42.5.0</postgresql.version>
+    <kumuluzee-health.version>2.4.4</kumuluzee-health.version>
+    <kumuluzee-metrics.version>3.0.0</kumuluzee-metrics.version>
   </properties>
 
   <dependencyManagement>
@@ -61,6 +62,19 @@
         <version>${kumuluzee-config-mp.version}</version>
       </dependency>
 
+
+      <dependency>
+        <groupId>com.kumuluz.ee.health</groupId>
+        <artifactId>kumuluzee-health</artifactId>
+        <version>${kumuluzee-health.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.kumuluz.ee.metrics</groupId>
+        <artifactId>kumuluzee-metrics-core</artifactId>
+        <version>${kumuluzee-metrics.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
@@ -72,6 +86,12 @@
       <dependency>
         <groupId>net.bobnar.marketplace</groupId>
         <artifactId>catalogue</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.bobnar.marketplace</groupId>
+        <artifactId>loader-agent</artifactId>
         <version>${project.version}</version>
       </dependency>
 

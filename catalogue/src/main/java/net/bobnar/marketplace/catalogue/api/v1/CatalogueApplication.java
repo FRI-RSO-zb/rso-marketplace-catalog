@@ -12,14 +12,17 @@ import javax.ws.rs.core.Application;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "Image catalog API", version = "v1",
-                contact = @Contact(email = "rso@fri.uni-lj.si", name = "Ziga"),
-                license = @License(name = "dev"),
-                description = "API for managing image metadata.",
-                termsOfService = "Non-production"
+                title = "Marketplace Catalogue API", version = "v1",
+//                contact = @Contact(email = "rso@fri.uni-lj.si", name = "Ziga"),
+                license = @License(name = ""),
+                description = "API for marketplace catalogue. Provides access to ad listings and sellers."//,
+//                termsOfService = "Non-production"
         ),
-        servers = @Server(url = "http://localhost:8080/")
+        servers = @Server(
+                description = "Local development",
+                url = "http://localhost:8080/"
+        )
 )
-@ApplicationPath("/v1")
+@ApplicationPath("v1")
 public class CatalogueApplication extends Application {
 }
