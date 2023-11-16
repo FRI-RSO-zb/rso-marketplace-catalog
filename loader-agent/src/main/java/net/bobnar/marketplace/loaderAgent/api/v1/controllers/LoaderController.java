@@ -1,7 +1,6 @@
 package net.bobnar.marketplace.loaderAgent.api.v1.controllers;
 
-import net.bobnar.marketplace.loaderAgent.services.AvtoNetService;
-import net.bobnar.marketplace.loaderAgent.services.BolhaService;
+import net.bobnar.marketplace.loaderAgent.services.*;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import javax.ws.rs.*;
@@ -31,6 +30,18 @@ public class LoaderController {
         } else if (site.equals("bolha")) {
             if (page.equals("latestCars")) {
                 return Response.ok(new BolhaService().loadLatestCarAds()).build();
+            }
+        } else if (site.equals("doberavto")) {
+            if (page.equals("latest")) {
+                return Response.ok(new DoberAvtoService().loadLatestCarAds()).build();
+            }
+        } else if (site.equals("salomon")) {
+            if (page.equals("latest")) {
+                return Response.ok(new SalomonService().loadLatestCarAds()).build();
+            }
+        } else if (site.equals("oglasisi")) {
+            if (page.equals("latest")) {
+                return Response.ok(new OglasiSiService().loadLatestCarAds()).build();
             }
         }
 
