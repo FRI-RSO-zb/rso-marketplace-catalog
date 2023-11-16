@@ -3,19 +3,17 @@ package net.bobnar.marketplace.catalogue.services;
 import net.bobnar.marketplace.catalogue.entities.AdEntity;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
 
 @RequestScoped
-public class AdService {
-
-    @PersistenceContext
-    private EntityManager em;
+public class AdService extends EntityServiceBase {
 
     public List<AdEntity> getAds() {
-        List<AdEntity> ads = em
+        List<AdEntity> ads = this.em
                 .createNamedQuery("Ads.findAll", AdEntity.class)
                 .getResultList();
 
@@ -23,22 +21,32 @@ public class AdService {
     }
 
     public AdEntity getAd(Integer id) {
-        return em.find(AdEntity.class, id);
+        return this.em.find(AdEntity.class, id);
     }
 
-    @Transactional
     public void saveAd(AdEntity ad) {
         if (ad != null) {
-            em.persist(ad);
+            try {
+                this.beginTransaction();
+                this.em.persist(ad);
+                this.commitTransaction();
+            } catch (Exception e) {
+                this.rollbackTransaction();
+            }
         }
     }
 
-//    @Transactional(Transactional.TxType.REQUIRED)
     public void deleteAd(Integer id)  {
-        AdEntity ad = em.find(AdEntity.class, id);
+        AdEntity ad = this.em.find(AdEntity.class, id);
+
         if (ad != null) {
-            em.remove(ad);
+            try {
+                this.beginTransaction();
+                this.em.remove(ad);
+                this.commitTransaction();
+            } catch (Exception e) {
+                this.rollbackTransaction();
+            }
         }
-        em.flush();
     }
 }

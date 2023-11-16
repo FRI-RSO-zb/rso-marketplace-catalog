@@ -9,14 +9,10 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @RequestScoped
-public class SellerService {
-
-    @PersistenceContext
-    private EntityManager em;
-
+public class SellerService extends EntityServiceBase {
 
     public List<SellerEntity> getSellers() {
-        List<SellerEntity> sellers = em
+        List<SellerEntity> sellers = this.em
                 .createNamedQuery("Sellers.findAll", SellerEntity.class)
                 .getResultList();
 
@@ -24,21 +20,32 @@ public class SellerService {
     }
 
     public SellerEntity getSeller(Integer id) {
-        return em.find(SellerEntity.class, id);
+        return this.em.find(SellerEntity.class, id);
     }
 
-    @Transactional
     public void saveSeller(SellerEntity seller) {
         if (seller != null) {
-            em.persist(seller);
+            try {
+                this.beginTransaction();
+                this.em.persist(seller);
+                this.commitTransaction();
+            } catch (Exception e) {
+                this.rollbackTransaction();
+            }
         }
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
     public void deleteSeller(Integer id) {
-        SellerEntity seller = em.find(SellerEntity.class, id);
+        SellerEntity seller = this.em.find(SellerEntity.class, id);
+
         if (seller != null) {
-            em.remove(seller);
+            try {
+                this.beginTransaction();
+                this.em.remove(seller);
+                this.commitTransaction();
+            } catch (Exception e) {
+                this.rollbackTransaction();
+            }
         }
     }
 }

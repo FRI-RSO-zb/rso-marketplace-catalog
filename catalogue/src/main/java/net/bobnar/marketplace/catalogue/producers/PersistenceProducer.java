@@ -18,7 +18,6 @@ public class PersistenceProducer {
     }
 
     public void disposeEntityManager(@Disposes EntityManager entityManager) {
-
         if (entityManager.isOpen()) {
             entityManager.close();
         }
