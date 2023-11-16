@@ -1,5 +1,6 @@
 package net.bobnar.marketplace.catalogue.api.v1;
 
+import com.kumuluz.ee.health.HealthRegistry;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.info.Contact;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
@@ -20,7 +21,7 @@ import javax.ws.rs.core.Application;
         ),
         servers = @Server(
                 description = "Local development",
-                url = "http://localhost:8080/"
+                url = "http://localhost:8001/"
         )
 )
 @ApplicationPath("v1")

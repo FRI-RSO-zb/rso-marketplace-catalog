@@ -4,37 +4,26 @@ kumuluzee:
     name: dev
   version: 1.0.0
   server:
-    base-url: http://localhost:8081
+    base-url: http://localhost:8002
     http:
-      port: 8081
+      port: 8002
   openapi:
     enabled: true
     ui:
       enabled: true
-#  datasources:
-#    - jndi-name: jdbc/MarketplaceCatalogueDS
-#      connection-url: jdbc:postgresql://cornelius.db.elephantsql.com/vqmyhneq
-##      connection-url: jdbc:postgresql://localhost:5432/image-metadata
-#      username: vqmyhneq
-#      password: OWxoZ6iyUrw4zZzOStHjYw9vhlJmyGby
-#      pool:
-#        max-size: 5
-#      max-pool-size: 2 # Not working.
-#  health:
-#    checks:
-#      disk-space-health-check:
-#        threshold: 100000000
-##      data-source-health-check:
-##        - jndi-name: jdbc/MarketplaceCatalogueDS
-##          type: liveness
+  health:
+    enabled: true
+    checks:
+      disk-space-health-check:
+        threshold: 1000000
 #      http-health-check:
 #        - connection-url: https://example.org
 
-#    logs:
-#      enabled: true
-#      type: readiness
-#      level: FINE
-#      period-s: 60
+    logs:
+      enabled: true
+      type: readiness
+      level: FINE
+      period-s: 60
 
 #  metrics:
 #    servlet:

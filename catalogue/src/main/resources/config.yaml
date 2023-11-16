@@ -4,9 +4,9 @@ kumuluzee:
     name: dev
   version: 1.0.0
   server:
-    base-url: http://localhost:8080
+    base-url: http://localhost:8001
     http:
-      port: 8080
+      port: 8001
   openapi:
     enabled: true
     ui:
@@ -23,7 +23,7 @@ kumuluzee:
   health:
     checks:
       disk-space-health-check:
-        threshold: 100000000
+        threshold: 1000000
       data-source-health-check:
         - jndi-name: jdbc/MarketplaceCatalogueDS
           type: liveness
