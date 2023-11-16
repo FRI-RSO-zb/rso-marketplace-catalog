@@ -34,6 +34,6 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v3
         with:
-          file: ./Dockerfile_with_maven_build
+          file: ./Dockerfile.loader-agent
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/loader-agent:${{ steps.current-time.outputs.formattedTime }}
