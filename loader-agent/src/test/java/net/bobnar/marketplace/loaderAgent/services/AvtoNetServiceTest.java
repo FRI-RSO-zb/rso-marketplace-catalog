@@ -26,7 +26,7 @@ class AvtoNetServiceTest {
         BufferedReader reader = new BufferedReader(isr);
         String data = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 
-        ProcessResult<List<Object>> result = new AvtoNetService().processList(data);
+        ProcessResult<List<AvtoNetListItemResult>> result = new AvtoNetService().processList(data);
 
         assertNotNull(result);
         assertEquals("", result.errors);
@@ -35,7 +35,15 @@ class AvtoNetServiceTest {
     }
 
     @Test
-    void processListing() {
+    void processListing() throws FileNotFoundException {
+        FileInputStream fis = new FileInputStream("src/test/resources/avtonet-ad-details-18980973.html");
+        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+        BufferedReader reader = new BufferedReader(isr);
+        String data = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+
+        var result = new AvtoNetService().processListing(data);
+
+        assertNotNull(result);
     }
 
     @Test

@@ -37,12 +37,12 @@ public class AvtoNetService {
         return result.html();
     }
 
-    public ProcessResult<List<Object>> processList(String data) {
+    public ProcessResult<List<AvtoNetListItemResult>> processList(String data) {
         Document page = Jsoup.parse(data);
 
-        ProcessResult<List<Object>> result = new ProcessResult<List<Object>>();
+        ProcessResult<List<AvtoNetListItemResult>> result = new ProcessResult<List<AvtoNetListItemResult>>();
         result.status = "fail";
-        result.resultItem = new ArrayList<Object>();
+        result.resultItem = new ArrayList<AvtoNetListItemResult>();
 
         StringBuilder exceptionsBuilder = new StringBuilder();
 
@@ -51,7 +51,7 @@ public class AvtoNetService {
             try {
                 result.resultItem.add(this.processListItem(resultRow));
             } catch (Exception e) {
-                exceptionsBuilder.append(e.toString()).append("\n");
+                exceptionsBuilder.append(e).append("\n");
                 exceptionsBuilder.append(resultRow.html()).append("\n");
                 exceptionsBuilder.append(ExceptionUtils.readStackTrace(e)).append("\n\n");
             }
@@ -69,6 +69,7 @@ public class AvtoNetService {
 
 
     public Object processListing(String data) {
+        // TODO:
         return null;
     }
 
