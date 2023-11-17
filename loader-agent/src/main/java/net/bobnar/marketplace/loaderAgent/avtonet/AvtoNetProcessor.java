@@ -1,59 +1,54 @@
-package net.bobnar.marketplace.loaderAgent.services;
+package net.bobnar.marketplace.loaderAgent.avtonet;
 
-import net.bobnar.marketplace.loaderAgent.AvtoNetListItemResult;
-import net.bobnar.marketplace.loaderAgent.ProcessResult;
+import net.bobnar.marketplace.loaderAgent.processor.ProcessItemResult;
+import net.bobnar.marketplace.loaderAgent.processor.ProcessListResult;
+import net.bobnar.marketplace.loaderAgent.processor.ProcessorBase;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.platform.commons.util.ExceptionUtils;
 
-import javax.enterprise.context.RequestScoped;
-import java.io.IOException;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.AbstractMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@RequestScoped
-public class AvtoNetService {
-    final String avtonetUrl = "https://www.avto.net/";
+public class AvtoNetProcessor extends ProcessorBase<Object, AvtoNetListItem> {
+    @Override
+    public ProcessItemResult<Object> processItem(String data) {
+        ProcessItemResult<Object> result =  new ProcessItemResult<>();
+        result.fail("Operation not implemented");
 
-    public Object loadAvtonetTop100List() throws IOException {
-        Document result = Jsoup.connect(this.getAvtonetUrl("Ads/results_100.asp?oglasrubrika=1&prodajalec=2"))
-                .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0")
-                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
-                .header("Accept-Language", "en-US,en;q=0.5")
-                .header("Accept-Encoding", "gzip, deflate, br")
-                .header("DNT", "1")
-                .header("Connection", "keep-alive")
-                .get();
-
-
-
-        System.out.println(result.html());
-
-        return result.html();
+        return result;
     }
 
-    public ProcessResult<List<AvtoNetListItemResult>> processList(String data) {
-        Document page = Jsoup.parse(data);
+    @Override
+    public ProcessListResult<AvtoNetListItem> processItemList(String data) {
+        ProcessListResult<AvtoNetListItem> result = new ProcessListResult<>();
 
-        ProcessResult<List<AvtoNetListItemResult>> result = new ProcessResult<List<AvtoNetListItemResult>>();
-        result.status = "fail";
-        result.resultItem = new ArrayList<AvtoNetListItemResult>();
+        Document page = Jsoup.parse(data);
 
         StringBuilder exceptionsBuilder = new StringBuilder();
 
         Elements resultRows = page.getElementsByClass("GO-Results-Row");
         for (Element resultRow : resultRows) {
             try {
-                result.resultItem.add(this.processListItem(resultRow));
+                ProcessItemResult<AvtoNetListItem> itemResult = this.processListItem(resultRow.html());
+
+                if (itemResult.isFailed()) {
+                    result.failedItems.add(new AbstractMap.SimpleEntry<>(resultRow.html(), itemResult.item));
+                    exceptionsBuilder.append(result.errors).append("\n");
+                    exceptionsBuilder.append(resultRow.html()).append("\n\n");
+                } else {
+                    result.processedItems.add(itemResult.item);
+                }
             } catch (Exception e) {
                 exceptionsBuilder.append(e).append("\n");
                 exceptionsBuilder.append(resultRow.html()).append("\n");
                 exceptionsBuilder.append(ExceptionUtils.readStackTrace(e)).append("\n\n");
+
+                result.failedItems.add(new AbstractMap.SimpleEntry<>(resultRow.html(), null));
             }
         }
 
@@ -61,30 +56,32 @@ public class AvtoNetService {
         result.errors = exceptions;
 
         if (exceptions.isEmpty()) {
-            result.status = "ok";
+            result.success();
+        } else {
+            result.fail();
         }
 
         return result;
     }
 
+    @Override
+    public ProcessItemResult<AvtoNetListItem> processListItem(String data) {
+        ProcessItemResult<AvtoNetListItem> result = new ProcessItemResult<>();
+        result.success();
 
-    public Object processListing(String data) {
-        // TODO:
-        return null;
-    }
+        result.item = new AvtoNetListItem();
 
-    public AvtoNetListItemResult processListItem(Element itemRow) throws Exception {
-        AvtoNetListItemResult result = new AvtoNetListItemResult();
+        Element itemRow = Jsoup.parse(data).root();
 
         String adLink = itemRow.getElementsByTag("a").first().attr("href");
         Matcher matcher = Pattern.compile("id=([0-9]+)&display=(.*)", Pattern.CASE_INSENSITIVE).matcher(adLink);
         matcher.find();
-        result.id = Integer.parseInt(matcher.group(1));
-        result.shortTitle = matcher.group(2).replace("%20", " ");
+        result.item.id = Integer.parseInt(matcher.group(1));
+        result.item.shortTitle = matcher.group(2).replace("%20", " ");
 
-        result.title = itemRow.getElementsByClass("GO-Results-Naziv").first().getElementsByTag("span").first().text();
+        result.item.title = itemRow.getElementsByClass("GO-Results-Naziv").first().getElementsByTag("span").first().text();
 
-        result.photoPath = itemRow.getElementsByClass("GO-Results-Photo").first().getElementsByTag("img").first().attr("SRC");
+        result.item.photoPath = itemRow.getElementsByClass("GO-Results-Photo").first().getElementsByTag("img").first().attr("SRC");
 
         Elements dataRows = itemRow.getElementsByClass("GO-Results-Data-Top").first().getElementsByTag("tr");
         for (Element dataRow : dataRows) {
@@ -96,19 +93,19 @@ public class AvtoNetService {
             }
 
             if (property.equals("1.registracija")) {
-                result.firstRegistrationYear = Integer.parseInt(value);
+                result.item.firstRegistrationYear = Integer.parseInt(value);
             } else if (property.equals("Prevoženih")) {
-                result.drivenDistanceKm = Integer.parseInt(value.replace(" km", ""));
+                result.item.drivenDistanceKm = Integer.parseInt(value.replace(" km", ""));
             } else if (property.equals("Gorivo")) {
-                result.engineType = value;
+                result.item.engineType = value;
             } else if (property.equals("Menjalnik")) {
-                result.transmissionType = value;
+                result.item.transmissionType = value;
             } else if (property.equals("Motor")) {
-                result.engineParameters = value;
+                result.item.engineParameters = value;
             } else if (property.equals("Starost")) {
-                result.age = value;
+                result.item.age = value;
             } else if (property.equals("Baterija") || property.endsWith("baterija")) {
-                result.otherParameters.put(property, value);
+                result.item.otherParameters.put(property, value);
             } else {
                 throw new InvalidParameterException("Unknown parameter in ad listing: " + property + ", value: " + value);
             }
@@ -116,20 +113,20 @@ public class AvtoNetService {
 
         Element sellerNotesEl = itemRow.getElementsByClass("GO-bg-graylight").first();
         if (sellerNotesEl != null) {
-            result.sellerNotes = sellerNotesEl.text();
+            result.item.sellerNotes = sellerNotesEl.text();
         }
 
 
         Element priceEl = itemRow.getElementsByClass("GO-Results-PriceLogo").first();
         Element sellerEl = priceEl.getElementsByClass("GO-Results-Logo").first();
         if (sellerEl != null) {
-            result.isDealer = true;
+            result.item.isDealer = true;
             Element sellerLinkEl = sellerEl.getElementsByTag("a").first();
             if (sellerLinkEl != null) {
                 String sellerLink = sellerLinkEl.attr("HREF");
                 Matcher matcher1 = Pattern.compile("broker=([0-9]+)&", Pattern.CASE_INSENSITIVE).matcher(sellerLink);
                 matcher1.find();
-                result.dealerId = Integer.parseInt(matcher1.group(1));
+                result.item.dealerId = Integer.parseInt(matcher1.group(1));
             } else {
                 // Case of blank image as seller graphics - cannot determine dealer id.
             }
@@ -138,7 +135,7 @@ public class AvtoNetService {
         boolean priceProcessed = false;
         Element regularPriceEl = priceEl.getElementsByClass("Go-Results-Price-TXT-Regular").first();
         if (regularPriceEl != null) {
-            result.regularPrice = regularPriceEl.text();
+            result.item.regularPrice = regularPriceEl.text();
             priceProcessed = true;
         }
         Element actionPriceTextEl = priceEl.getElementsByClass("Go-Results-Price-Akcija-TXT").first();
@@ -149,13 +146,14 @@ public class AvtoNetService {
             priceProcessed = true;
         }
 
-        if (!priceProcessed)
-            throw new Exception("Price element does not exist");
+        if (!priceProcessed) {
+            result.fail("Price element does not exist");
+        }
+
+//        if (result.errors != null && result.errors.isEmpty()) {
+//            result.success();
+//        }
 
         return result;
-    }
-
-    private String getAvtonetUrl(String path) {
-        return this.avtonetUrl + path;
     }
 }

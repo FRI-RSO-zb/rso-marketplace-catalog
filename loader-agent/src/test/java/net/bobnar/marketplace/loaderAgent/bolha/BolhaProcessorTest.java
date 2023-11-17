@@ -1,10 +1,7 @@
-package net.bobnar.marketplace.loaderAgent.services;
+package net.bobnar.marketplace.loaderAgent.bolha;
 
-import net.bobnar.marketplace.loaderAgent.AvtoNetListItemResult;
-import net.bobnar.marketplace.loaderAgent.BolhaListItemResult;
-import net.bobnar.marketplace.loaderAgent.ProcessResult;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import net.bobnar.marketplace.loaderAgent.processor.ProcessItemResult;
+import net.bobnar.marketplace.loaderAgent.processor.ProcessListResult;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -12,12 +9,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BolhaServiceTest {
+class BolhaProcessorTest {
 
     @Test
     void processList() throws FileNotFoundException {
@@ -26,12 +22,14 @@ class BolhaServiceTest {
         BufferedReader reader = new BufferedReader(isr);
         String data = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 
-        ProcessResult<List<BolhaListItemResult>> result = new BolhaService().processList(data);
+        ProcessListResult<BolhaListItem> result = new BolhaProcessor().processItemList(data);
 
         assertNotNull(result);
+        assertTrue(result.isSuccess());
         assertEquals("", result.errors);
         assertEquals("ok", result.status);
-        assertEquals(31, result.resultItem.size()); // We actually only get 99 ads in the top100
+        assertEquals(31, result.processedItems.size()); // We actually only get 99 ads in the top100
+        assertEquals(0, result.failedItems.size());
     }
 
 //    @Test
@@ -53,21 +51,20 @@ class BolhaServiceTest {
         BufferedReader reader = new BufferedReader(isr);
         String data = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 
-        Document item = Jsoup.parse(data);
-
-        BolhaListItemResult result = new BolhaService().processListItem(item);
+        ProcessItemResult<BolhaListItem> result = new BolhaProcessor().processListItem(data);
 
         assertNotNull(result);
-
-        assertFalse(result.isExposed);
-        assertEquals("VW Arteon 2.0 TDI 110kW-MODEL 2020-ODLIČEN-MENJAM-UGODNO", result.title);
-        assertEquals(11911746, result.id);
-        assertEquals("https://static.bolha.com/dist/ceb7cc1a7b.png", result.photoPath);
-        assertEquals("Rabljeno vozilo", result.age);
-        assertEquals(1, result.drivenDistanceKm);
-        assertEquals(2019, result.manufacturingYear);
-        assertEquals("Sevnica, Sevnica", result.location);
-        assertEquals("2023-11-16T19:05:17+01:00", result.publishDate);
-        assertEquals("24.500 €", result.price);
+        assertTrue(result.isSuccess());
+        assertNotNull(result.item);
+        assertFalse(result.item.isExposed);
+        assertEquals("VW Arteon 2.0 TDI 110kW-MODEL 2020-ODLIČEN-MENJAM-UGODNO", result.item.title);
+        assertEquals(11911746, result.item.id);
+        assertEquals("https://static.bolha.com/dist/ceb7cc1a7b.png", result.item.photoPath);
+        assertEquals("Rabljeno vozilo", result.item.age);
+        assertEquals(1, result.item.drivenDistanceKm);
+        assertEquals(2019, result.item.manufacturingYear);
+        assertEquals("Sevnica, Sevnica", result.item.location);
+        assertEquals("2023-11-16T19:05:17+01:00", result.item.publishDate);
+        assertEquals("24.500 €", result.item.price);
     }
 }

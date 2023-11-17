@@ -1,8 +1,8 @@
-package net.bobnar.marketplace.loaderAgent;
+package net.bobnar.marketplace.loaderAgent.avtonet;
 
 import java.util.*;
 
-public class AvtoNetListItemResult {
+public class AvtoNetListItem {
     public String title;
     public int id;
     public String shortTitle;

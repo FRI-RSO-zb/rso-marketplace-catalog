@@ -1,5 +1,7 @@
 package net.bobnar.marketplace.loaderAgent.api.v1.controllers;
 
+import net.bobnar.marketplace.loaderAgent.avtonet.AvtoNetLoader;
+import net.bobnar.marketplace.loaderAgent.bolha.BolhaLoader;
 import net.bobnar.marketplace.loaderAgent.services.*;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -25,11 +27,11 @@ public class LoaderController {
     public Response loadPage(@PathParam("site") String site, @PathParam("page") String page) throws IOException {
         if (site.equals("avtonet")) {
             if (page.equals("top100")) {
-                return Response.ok(new AvtoNetService().loadAvtonetTop100List()).build();
+                return Response.ok(new AvtoNetLoader().loadAvtonetTop100List()).build();
             }
         } else if (site.equals("bolha")) {
             if (page.equals("latestCars")) {
-                return Response.ok(new BolhaService().loadLatestCarAds()).build();
+                return Response.ok(new BolhaLoader().loadLatestCarAds()).build();
             }
         } else if (site.equals("doberavto")) {
             if (page.equals("latest")) {

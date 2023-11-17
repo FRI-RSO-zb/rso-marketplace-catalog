@@ -1,7 +1,7 @@
 package net.bobnar.marketplace.loaderAgent.api.v1.controllers;
 
-import net.bobnar.marketplace.loaderAgent.services.AvtoNetService;
-import net.bobnar.marketplace.loaderAgent.services.BolhaService;
+import net.bobnar.marketplace.loaderAgent.avtonet.AvtoNetProcessor;
+import net.bobnar.marketplace.loaderAgent.bolha.BolhaProcessor;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -21,15 +21,15 @@ public class ParserController {
     public Response parseData(@PathParam("site") String site, @PathParam("type") String type, @RequestBody() String data) {
         if (site.equals("avtonet")) {
             if (type.equals("list")) {
-                return Response.ok(new AvtoNetService().processList(data)).build();
+                return Response.ok(new AvtoNetProcessor().processItemList(data)).build();
             } else if (type.equals("listing")) {
-                return Response.ok(new AvtoNetService().processListing(data)).build();
+                return Response.ok(new AvtoNetProcessor().processItem(data)).build();
             }
         } else if (site.equals("bolha")) {
             if (type.equals("list")) {
-                return Response.ok(new BolhaService().processList(data)).build();
+                return Response.ok(new BolhaProcessor().processItemList(data)).build();
             } else if (type.equals("listing")) {
-                return Response.ok(new BolhaService().processListing(data)).build();
+                return Response.ok(new BolhaProcessor().processItem(data)).build();
             }
         }
 
