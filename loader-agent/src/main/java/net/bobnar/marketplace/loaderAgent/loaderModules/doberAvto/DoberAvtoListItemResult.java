@@ -1,4 +1,4 @@
-package net.bobnar.marketplace.loaderAgent;
+package net.bobnar.marketplace.loaderAgent.loaderModules.doberAvto;
 
 public class DoberAvtoListItemResult {
     public String id;

@@ -1,4 +1,4 @@
-package net.bobnar.marketplace.loaderAgent.bolha;
+package net.bobnar.marketplace.loaderAgent.loaderModules.bolha;
 
 import net.bobnar.marketplace.loaderAgent.loader.LoaderBase;
 import org.jsoup.nodes.Document;

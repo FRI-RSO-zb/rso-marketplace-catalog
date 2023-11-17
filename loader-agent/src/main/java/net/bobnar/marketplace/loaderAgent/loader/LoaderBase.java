@@ -35,4 +35,20 @@ public abstract class LoaderBase<T> implements ILoader<T> {
 
         return result;
     }
+
+    public String loadJsonFromUrl(String path, String referer) throws IOException {
+        String result = Jsoup.connect(this.getUrl(path))
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0")
+                .header("Accept", "*/*")
+                .header("Accept-Language", "en-US,en;q=0.5")
+                .header("Accept-Encoding", "gzip, deflate, br")
+                .header("DNT", "1")
+                .header("Connection", "keep-alive")
+                .header("Referer", referer)
+                .ignoreContentType(true)
+                .execute()
+                .body();
+
+        return result;
+    }
 }

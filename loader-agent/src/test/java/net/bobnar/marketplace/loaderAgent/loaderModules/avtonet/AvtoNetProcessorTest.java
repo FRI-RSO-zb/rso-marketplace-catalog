@@ -1,5 +1,7 @@
-package net.bobnar.marketplace.loaderAgent.avtonet;
+package net.bobnar.marketplace.loaderAgent.loaderModules.avtonet;
 
+import net.bobnar.marketplace.loaderAgent.loaderModules.avtonet.AvtoNetListItem;
+import net.bobnar.marketplace.loaderAgent.loaderModules.avtonet.AvtoNetProcessor;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessItemResult;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessListResult;
 import org.junit.jupiter.api.Test;

@@ -2,7 +2,7 @@ package net.bobnar.marketplace.loaderAgent.api.v1;
 
 import com.kumuluz.ee.health.HealthRegistry;
 import com.kumuluz.ee.health.enums.HealthCheckType;
-import net.bobnar.marketplace.loaderAgent.CatalogueAvailableHealthCheck;
+import net.bobnar.marketplace.loaderAgent.healthChecks.CatalogueAvailableHealthCheck;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.eclipse.microprofile.openapi.annotations.servers.Server;

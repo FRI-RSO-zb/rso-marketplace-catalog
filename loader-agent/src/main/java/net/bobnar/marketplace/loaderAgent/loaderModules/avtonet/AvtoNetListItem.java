@@ -1,4 +1,4 @@
-package net.bobnar.marketplace.loaderAgent.avtonet;
+package net.bobnar.marketplace.loaderAgent.loaderModules.avtonet;
 
 import java.util.*;
 

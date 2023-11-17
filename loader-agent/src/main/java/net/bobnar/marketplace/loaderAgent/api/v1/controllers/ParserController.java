@@ -1,7 +1,7 @@
 package net.bobnar.marketplace.loaderAgent.api.v1.controllers;
 
-import net.bobnar.marketplace.loaderAgent.avtonet.AvtoNetProcessor;
-import net.bobnar.marketplace.loaderAgent.bolha.BolhaProcessor;
+import net.bobnar.marketplace.loaderAgent.loaderModules.avtonet.AvtoNetProcessor;
+import net.bobnar.marketplace.loaderAgent.loaderModules.bolha.BolhaProcessor;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 

@@ -1,4 +1,4 @@
-package net.bobnar.marketplace.loaderAgent;
+package net.bobnar.marketplace.loaderAgent.healthChecks;
 
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;

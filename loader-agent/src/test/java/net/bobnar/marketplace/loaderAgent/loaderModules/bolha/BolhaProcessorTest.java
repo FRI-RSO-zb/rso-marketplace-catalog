@@ -1,5 +1,7 @@
-package net.bobnar.marketplace.loaderAgent.bolha;
+package net.bobnar.marketplace.loaderAgent.loaderModules.bolha;
 
+import net.bobnar.marketplace.loaderAgent.loaderModules.bolha.BolhaListItem;
+import net.bobnar.marketplace.loaderAgent.loaderModules.bolha.BolhaProcessor;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessItemResult;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessListResult;
 import org.junit.jupiter.api.Test;

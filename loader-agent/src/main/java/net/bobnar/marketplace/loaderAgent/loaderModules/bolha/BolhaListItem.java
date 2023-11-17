@@ -1,4 +1,4 @@
-package net.bobnar.marketplace.loaderAgent.bolha;
+package net.bobnar.marketplace.loaderAgent.loaderModules.bolha;
 
 public class BolhaListItem {
     public boolean isExposed;

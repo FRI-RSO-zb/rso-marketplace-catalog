@@ -1,8 +1,10 @@
 package net.bobnar.marketplace.loaderAgent.api.v1.controllers;
 
-import net.bobnar.marketplace.loaderAgent.avtonet.AvtoNetLoader;
-import net.bobnar.marketplace.loaderAgent.bolha.BolhaLoader;
-import net.bobnar.marketplace.loaderAgent.services.*;
+import net.bobnar.marketplace.loaderAgent.loaderModules.doberAvto.DoberAvtoLoader;
+import net.bobnar.marketplace.loaderAgent.loaderModules.avtonet.AvtoNetLoader;
+import net.bobnar.marketplace.loaderAgent.loaderModules.bolha.BolhaLoader;
+import net.bobnar.marketplace.loaderAgent.loaderModules.oglasiSi.OglasiSiLoader;
+import net.bobnar.marketplace.loaderAgent.loaderModules.salomon.SalomonLoader;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import javax.ws.rs.*;
@@ -35,15 +37,15 @@ public class LoaderController {
             }
         } else if (site.equals("doberavto")) {
             if (page.equals("latest")) {
-                return Response.ok(new DoberAvtoService().loadLatestCarAds()).build();
+                return Response.ok(new DoberAvtoLoader().loadLatestCarAds()).build();
             }
         } else if (site.equals("salomon")) {
             if (page.equals("latest")) {
-                return Response.ok(new SalomonService().loadLatestCarAds()).build();
+                return Response.ok(new SalomonLoader().loadLatestCarAds()).build();
             }
         } else if (site.equals("oglasisi")) {
             if (page.equals("latest")) {
-                return Response.ok(new OglasiSiService().loadLatestCarAds()).build();
+                return Response.ok(new OglasiSiLoader().loadLatestCarAds()).build();
             }
         }
 

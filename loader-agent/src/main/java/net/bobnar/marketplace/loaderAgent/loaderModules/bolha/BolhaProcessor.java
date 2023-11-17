@@ -1,6 +1,5 @@
-package net.bobnar.marketplace.loaderAgent.bolha;
+package net.bobnar.marketplace.loaderAgent.loaderModules.bolha;
 
-import net.bobnar.marketplace.loaderAgent.ProcessResult;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessItemResult;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessListResult;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessorBase;
@@ -12,8 +11,6 @@ import org.junit.platform.commons.util.ExceptionUtils;
 
 import javax.enterprise.context.RequestScoped;
 import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
