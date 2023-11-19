@@ -1,28 +1,19 @@
 package net.bobnar.marketplace.loaderAgent.loaderModules.bolha;
 
-import net.bobnar.marketplace.loaderAgent.loaderModules.bolha.BolhaListItem;
-import net.bobnar.marketplace.loaderAgent.loaderModules.bolha.BolhaProcessor;
+import net.bobnar.marketplace.loaderAgent.TestBase;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessItemResult;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessListResult;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BolhaProcessorTest {
+class BolhaProcessorTest extends TestBase {
 
     @Test
     void processList() throws FileNotFoundException {
-        FileInputStream fis = new FileInputStream("src/test/resources/bolha-avto-oglasi.html");
-        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-        BufferedReader reader = new BufferedReader(isr);
-        String data = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        String data = this.loadTestResource("bolha-avto-oglasi.html");
 
         ProcessListResult<BolhaListItem> result = new BolhaProcessor().processItemList(data);
 
@@ -48,10 +39,7 @@ class BolhaProcessorTest {
 
     @Test
     void  processListItem() throws Exception {
-        FileInputStream fis = new FileInputStream("src/test/resources/bolha-avto-oglasi-row.html");
-        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-        BufferedReader reader = new BufferedReader(isr);
-        String data = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        String data = this.loadTestResource("bolha-avto-oglasi-row.html");
 
         ProcessItemResult<BolhaListItem> result = new BolhaProcessor().processListItem(data);
 
