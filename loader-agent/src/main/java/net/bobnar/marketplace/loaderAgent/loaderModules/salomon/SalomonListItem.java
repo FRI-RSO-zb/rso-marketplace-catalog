@@ -1,0 +1,10 @@
+package net.bobnar.marketplace.loaderAgent.loaderModules.salomon;
+
+public class SalomonListItem {
+    public String photoUrl;
+    public String url;
+    public String id;
+    public String title;
+    public String price;
+    public String description;
+}

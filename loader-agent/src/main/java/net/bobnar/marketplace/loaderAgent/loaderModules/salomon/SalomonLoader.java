@@ -11,7 +11,6 @@ public class SalomonLoader extends LoaderBase<Object> {
         super("http://oglasi.svet24.si/");
     }
 
-
     public Object loadLatestCarAds() throws IOException {
         Document result = this.loadDocumentFromUrl("oglasi/motorna-vozila/avtomobili");
 
