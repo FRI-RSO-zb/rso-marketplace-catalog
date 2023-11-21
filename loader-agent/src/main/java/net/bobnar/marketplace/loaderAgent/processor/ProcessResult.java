@@ -8,6 +8,10 @@ public abstract class ProcessResult {
         this.status = "fail";
     }
 
+    public void addError(String error) {
+        this.fail(error);
+    }
+
     public void fail(String errors) {
         this.status = "fail";
         if (this.errors != null && !this.errors.isEmpty()) {
