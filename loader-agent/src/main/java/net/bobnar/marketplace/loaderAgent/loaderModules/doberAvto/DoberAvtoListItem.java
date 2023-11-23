@@ -1,6 +1,6 @@
 package net.bobnar.marketplace.loaderAgent.loaderModules.doberAvto;
 
-public class DoberAvtoListItemResult {
+public class DoberAvtoListItem {
     public String id;
     public String title;
     public String manufacturer;

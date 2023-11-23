@@ -1,28 +1,19 @@
 package net.bobnar.marketplace.loaderAgent.loaderModules.avtonet;
 
-import net.bobnar.marketplace.loaderAgent.loaderModules.avtonet.AvtoNetListItem;
-import net.bobnar.marketplace.loaderAgent.loaderModules.avtonet.AvtoNetProcessor;
+import net.bobnar.marketplace.loaderAgent.TestBase;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessItemResult;
 import net.bobnar.marketplace.loaderAgent.processor.ProcessListResult;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AvtoNetProcessorTest {
+class AvtoNetProcessorTest extends TestBase {
 
     @Test
     void processTop100List() throws FileNotFoundException {
-        FileInputStream fis = new FileInputStream("src/test/resources/avtonet-top100-list.html");
-        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-        BufferedReader reader = new BufferedReader(isr);
-        String data = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        String data = this.loadTestResource("avtonet-top100-list.html");
 
         ProcessListResult<AvtoNetListItem> result = new AvtoNetProcessor().processItemList(data);
 
@@ -47,10 +38,7 @@ class AvtoNetProcessorTest {
 
     @Test
     void  processListItem() throws Exception {
-        FileInputStream fis = new FileInputStream("src/test/resources/avtonet-top100-list-row.html");
-        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-        BufferedReader reader = new BufferedReader(isr);
-        String data = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        String data = this.loadTestResource("avtonet-top100-list-row.html");
 
         ProcessItemResult<AvtoNetListItem> result = new AvtoNetProcessor().processListItem(data);
 
