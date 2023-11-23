@@ -1,5 +1,6 @@
 package net.bobnar.marketplace.loaderAgent.api.v1.controllers;
 
+import com.kumuluz.ee.logs.cdi.Log;
 import net.bobnar.marketplace.loaderAgent.loaderModules.doberAvto.DoberAvtoLoader;
 import net.bobnar.marketplace.loaderAgent.loaderModules.avtonet.AvtoNetLoader;
 import net.bobnar.marketplace.loaderAgent.loaderModules.bolha.BolhaLoader;
@@ -12,6 +13,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
+
+@Log
 @Path("loader")
 @Tag(name="Loader", description="Endpoints for starting and reviewing the data loading jobs")
 @Produces(MediaType.APPLICATION_JSON)

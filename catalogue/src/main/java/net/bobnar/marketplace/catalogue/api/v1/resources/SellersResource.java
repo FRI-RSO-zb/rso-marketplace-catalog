@@ -1,5 +1,6 @@
 package net.bobnar.marketplace.catalogue.api.v1.resources;
 
+import com.kumuluz.ee.logs.cdi.Log;
 import net.bobnar.marketplace.catalogue.entities.SellerEntity;
 import net.bobnar.marketplace.catalogue.services.SellerService;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
@@ -18,6 +19,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+
+@Log
 @Path("sellers")
 @Tag(name="Sellers", description = "Seller related endpoints")
 @Produces(MediaType.APPLICATION_JSON)

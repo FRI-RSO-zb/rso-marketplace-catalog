@@ -1,5 +1,6 @@
 package net.bobnar.marketplace.loaderAgent.api.v1.controllers;
 
+import com.kumuluz.ee.logs.cdi.Log;
 import net.bobnar.marketplace.loaderAgent.loaderModules.avtonet.AvtoNetProcessor;
 import net.bobnar.marketplace.loaderAgent.loaderModules.bolha.BolhaProcessor;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -9,6 +10,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
+@Log
 @Path("parser")
 @Tag(name="Parser", description = "Endpoints for triggering parsing of obtained raw data")
 @Produces(MediaType.APPLICATION_JSON)
