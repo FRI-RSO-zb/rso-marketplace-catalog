@@ -1,0 +1,108 @@
+# kubectl create namespace marketplace
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketplace-loader-agent
+#  namespace: marketplace
+  labels:
+    app:  marketplace-loader-agent
+spec:
+  selector:
+    matchLabels:
+      app: marketplace-loader-agent
+      tier: backend
+  replicas: 1
+#  strategy:
+#    rollingUpdate:
+#      maxSurge: 25%
+#      maxUnavailable: 25%
+#    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  marketplace-loader-agent
+        tier: backend
+    spec:
+      containers:
+      - name:  marketplace-loader-agent
+        image:  k3d-test-registry:5050/marketplace-loader-agent:v1.0.0-3
+        imagePullPolicy: Always
+        ports:
+          - name:  server
+            containerPort:  8002
+        env:
+          - name: KUMULUZEE_ENV_NAME
+            value: local_cluster
+          - name: KUMULUZEE_SERVER_BASEURL
+#            value: http://localhost:8001/
+            value: http://loader-agent.marketplace.local:8888/
+#          - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
+            # Through vpn:
+#            value: jdbc:postgresql://pg.n1.ts.bobnar.net:15432/marketplace_catalogue_db
+            # Local:
+#            value: jdbc:postgresql://localhost:15432/marketplace_catalogue_db
+            # Direct access
+#            value: jdbc:postgresql://10.10.10.11:15432/marketplace_catalogue_db
+#          - name: KUMULUZEE_DATASOURCES0_USERNAME
+#            value: marketplace_catalogue_user
+#          - name: KUMULUZEE_DATASOURCES0_PASSWORD
+#            value: 'vbuJ8as4C4rbpS2RYmx3'
+#          - name: KUMULUZEE_DATASOURCES0_POOL_MAXSIZE
+#            value: '8'
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: server
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: server
+          initialDelaySeconds: 8
+          timeoutSeconds: 4
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+      restartPolicy: Always
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: marketplace-loader-agent
+#  namespace: marketplace
+spec:
+  selector:
+    app: marketplace-loader-agent
+    #tier: backend
+  ports:
+    - protocol: TCP
+      port: 8002
+      targetPort: server
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: marketplace-loader-agent
+#  namespace: marketplace
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - host: "loader-agent.marketplace.local"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: marketplace-loader-agent
+                port:
+                  number: 8002

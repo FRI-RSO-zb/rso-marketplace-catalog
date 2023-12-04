@@ -1,0 +1,19 @@
+mirrors:
+"localhost:5050":
+    endpoint:
+    - http://k3d-test-registry:5050
+
+
+# k3d registry create test-registry --port 5050
+# k3d cluster create testcluster --servers 2 --agents 3 -p "9900:80@loadbalancer" --registry-use k3d-test-registry:5050 --registry-config registries.yaml
+
+
+
+# docker build -f Dockerfile.catalogue -t marketplace-catalogue .
+# docker tag marketplace-catalogue localhost:5050/marketplace-catalogue:debug
+# docker push localhost:5050/marketplace-catalogue:debug
+
+# kubectl create deployment marketplace-catalogue --image=k3d-test-registry:5050/marketplace-catalogue:debug
+# kubectl create service clusterip marketplace-catalogue --tcp=8001:8001
+
+

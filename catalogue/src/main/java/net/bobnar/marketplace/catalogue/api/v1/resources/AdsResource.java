@@ -1,5 +1,6 @@
 package net.bobnar.marketplace.catalogue.api.v1.resources;
 
+import com.kumuluz.ee.cors.annotations.CrossOrigin;
 import com.kumuluz.ee.logs.cdi.Log;
 import net.bobnar.marketplace.catalogue.entities.AdEntity;
 import net.bobnar.marketplace.catalogue.services.AdService;
@@ -24,6 +25,7 @@ import java.util.List;
 @Tag(name="Ads", description = "Ad related endpoints")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@CrossOrigin(name = "ads-resource", allowOrigin = "https://marketplace.bobnar.net")
 @RequestScoped
 public class AdsResource {
 

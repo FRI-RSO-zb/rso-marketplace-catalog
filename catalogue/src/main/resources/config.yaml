@@ -4,31 +4,41 @@ kumuluzee:
     name: dev
   version: 1.0.0
   server:
-    base-url: http://localhost:8001
+    #base-url: http://localhost:8001
     http:
       port: 8001
+    cors-filter:
+      servlet:
+        enabled: true
+        allow-generic-http-requests: false
+#        allow-origin: "*" # Test only
+        allow-origin: "marketplace.bobnar.net"
   openapi:
     enabled: true
     ui:
       enabled: true
   datasources:
     - jndi-name: jdbc/MarketplaceCatalogueDS
-      connection-url: jdbc:postgresql://cornelius.db.elephantsql.com/vqmyhneq
+#      connection-url: jdbc:postgresql://cornelius.db.elephantsql.com/vqmyhneq
+      connection-url: jdbc:postgresql://localhost:15432/marketplace_catalogue_db
 #      connection-url: jdbc:postgresql://localhost:5432/image-metadata
-      username: vqmyhneq
-      password: OWxoZ6iyUrw4zZzOStHjYw9vhlJmyGby
+      username: marketplace_catalogue_user
+      # vqmyhneq
+      password: vbuJ8as4C4rbpS2RYmx3
+      # OWxoZ6iyUrw4zZzOStHjYw9vhlJmyGby
       pool:
         max-size: 4
 #      max-pool-size: 2 # Not working.
   health:
     checks:
       disk-space-health-check:
-        threshold: 1000000
+        threshold: 10000
+#        threshold: 1000000
       data-source-health-check:
         - jndi-name: jdbc/MarketplaceCatalogueDS
           type: liveness
-      http-health-check:
-        - connection-url: https://example.org
+#      http-health-check:
+#        - connection-url: https://example.org
 
     logs:
       enabled: true

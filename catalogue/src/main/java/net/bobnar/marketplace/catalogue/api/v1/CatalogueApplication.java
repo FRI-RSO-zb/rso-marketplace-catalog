@@ -14,15 +14,22 @@ import javax.ws.rs.core.Application;
 @OpenAPIDefinition(
         info = @Info(
                 title = "Marketplace Catalogue API", version = "v1",
-//                contact = @Contact(email = "rso@fri.uni-lj.si", name = "Ziga"),
-                license = @License(name = ""),
-                description = "API for marketplace catalogue. Provides access to ad listings and sellers."//,
-//                termsOfService = "Non-production"
+                description = "API for marketplace catalogue. Provides access to ad listings and sellers."
         ),
-        servers = @Server(
-                description = "Local development",
-                url = "http://localhost:8001/"
-        )
+        servers = {
+                @Server(
+                        description = "Local development",
+                        url = "http://localhost:8001/"
+                ),
+                @Server(
+                        description = "Local kubernetes cluster deployment",
+                        url = "http://catalogue.marketplace.local:8888/"
+                ),
+                @Server(
+                        description = "Production deployment",
+                        url = "https://catalogue.marketplace.bobnar.net/"
+                ),
+        }
 )
 @ApplicationPath("v1")
 public class CatalogueApplication extends Application {
