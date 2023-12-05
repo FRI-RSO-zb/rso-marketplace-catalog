@@ -1,15 +1,7 @@
-package net.bobnar.marketplace.catalogue.api.v1.resources;
+package net.bobnar.marketplace.catalogue.api.v1.controllers;
 
-//import com.kumuluz.ee.logs.cdi.Log;
-//import com.kumuluz.ee.rest.beans.QueryParameters;
-//import net.bobnar.marketplace.catalogue.entities.AdEntity;
-//import net.bobnar.marketplace.catalogue.services.AdService;
-//import org.eclipse.microprofile.metrics.ConcurrentGauge;
-//import org.eclipse.microprofile.metrics.Meter;
-//import org.eclipse.microprofile.metrics.annotation.Metered;
-//import org.eclipse.microprofile.metrics.annotation.Metric;
-//import org.eclipse.microprofile.metrics.annotation.Timed;
-//import com.kumuluz.ee.cors.annotations.CrossOrigin;
+import com.kumuluz.ee.logs.cdi.Log;
+import net.bobnar.marketplace.catalogue.entities.AdEntity;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
@@ -22,23 +14,18 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.util.List;
 
 
-//@Log
+@Log
 @Path("ads")
-@Tag(name="Ads", description = "Ad related endpoints")
+@Tag(name="Ads", description = "Endpoints for managing ad items.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RequestScoped
-//@CrossOrigin(name = "catalogue", allowOrigin = "localhost")
-public class AdsResource {
+public class AdsController {
 
 //    @Inject
 //    @Metric(name="ad_counter")
@@ -55,30 +42,30 @@ public class AdsResource {
 //    UriInfo uriInfo;
 
     @GET
-    @PermitAll
+//    @PermitAll
     @Operation(
             summary = "Get list of ads matching the filter criteria",
             description = "Filter the list of all ads with specified filter and return the paginated results."
     )
-//    @APIResponses({
-//            @APIResponse(
+    @APIResponses({
+            @APIResponse(
 //                    responseCode = "200",
-//                    description = "Resulting list of entities.",
-//                    content = @Content(
-//                            schema = @Schema(
+                    description = "Resulting list of entities.",
+                    content = @Content(
+                            schema = @Schema(
 //                                    description = "List of ad elements",
 //                                    type = SchemaType.ARRAY,
-//                                    implementation = AdEntity.class
-//                            )
-//                    ),
-//                    headers = {@Header(name = "X-Total-Count", schema = @Schema(type = SchemaType.INTEGER))}
-//            ),
-//            @APIResponse(
-//                    responseCode = "403",
-//                    description = "Bad request. Malformed query."
-////                    content = @Content(mediaType = MediaType.APPLICATION_JSON)
-//            )
-//    })
+                                    implementation = AdEntity.class
+                            )
+                    ),
+                    headers = {@Header(name = "X-Total-Count", schema = @Schema(type = SchemaType.INTEGER), description = "Total count of elements matching the query")}
+            ),
+            @APIResponse(
+                    responseCode = "403",
+                    description = "Bad request. Malformed query."
+//                    content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            )
+    })
 //    @Timed(name="get-all-ads-timer")
     public Response getAllAds() {
 //        QueryParameters query = QueryParameters.query(uriInfo.getRequestUri().getQuery()).build();
@@ -93,7 +80,7 @@ public class AdsResource {
     }
 
     @GET
-    @PermitAll
+//    @PermitAll
     @Path("{id}")
     public Response getAd(@PathParam("id") Integer id) {
 //        AdEntity ad = adService.getAd(id);
@@ -119,7 +106,7 @@ public class AdsResource {
     }
 
     @DELETE
-    @RolesAllowed("admin")
+//    @RolesAllowed("admin")
     @Path("{id}")
 //    @Timed(name="delete-ad-timer")
 //    @Metered(name="ad-deleting-meter")

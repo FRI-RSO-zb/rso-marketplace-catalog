@@ -7,12 +7,14 @@
 
   <!-- Build information -->
   <groupId>net.bobnar.marketplace</groupId>
-  <artifactId>marketplace</artifactId>
+  <artifactId>marketplace-catalog</artifactId>
   <version>${revision}</version>
+
   <properties>
     <!-- Build revision -->
+    <version>1.1.0</version>
     <!--suppress UnresolvedMavenProperty (it gets resolved upon packaging) -->
-    <revision>1.0.1-${git.branch}-${git.commit.id.describe-short}</revision>
+    <revision>${version}-${git.branch}-${git.commit.id.describe-short}</revision>
 
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
@@ -34,16 +36,17 @@
     <kumuluzee-cdi-weld.version>4.1.0</kumuluzee-cdi-weld.version>
   </properties>
 
+
   <modules>
-    <module>catalogue</module>
-    <!--    <module>loader-agent</module>-->
+    <module>api</module>
+    <module>data</module>
   </modules>
 
 
   <!-- Solution information -->
-  <name>Marketplace</name>
-  <description>Marketplace microservices.</description>
-  <url>https://marketplace.bobnar.net</url>
+  <name>Marketplace Catalog</name>
+  <description>Marketplace catalog microservice.</description>
+  <url>https://catalog.marketplace.bobnar.net/v1</url>
   <scm>
     <connection>scm:git:git@github.com:FRI-RSO-zb/marketplace</connection>
     <developerConnection>scm:git:git@github.com:FRI-RSO-zb/marketplace</developerConnection>
