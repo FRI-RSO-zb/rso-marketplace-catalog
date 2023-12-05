@@ -11,7 +11,8 @@
   <version>${revision}</version>
   <properties>
     <!-- Build revision -->
-    <revision>1.0.1-SNAPSHOT</revision>
+    <!--suppress UnresolvedMavenProperty (it gets resolved upon packaging) -->
+    <revision>1.0.1-${git.branch}-${git.commit.id.describe-short}</revision>
 
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
@@ -181,6 +182,31 @@
 
   <build>
     <plugins>
+      <!-- Plugin that extracts git commits to be used for version tagging the built archives-->
+      <plugin>
+        <groupId>io.github.git-commit-id</groupId>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
+        <version>5.0.0</version>
+        <executions>
+          <execution>
+            <id>get-the-git-infos</id>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+            <phase>initialize</phase>
+          </execution>
+        </executions>
+<!--        <configuration>-->
+<!--          <generateGitPropertiesFile>true</generateGitPropertiesFile>-->
+<!--          <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>-->
+<!--          <includeOnlyProperties>-->
+<!--            <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>-->
+<!--            <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>-->
+<!--          </includeOnlyProperties>-->
+<!--          <commitIdGenerationMode>full</commitIdGenerationMode>-->
+<!--        </configuration>-->
+      </plugin>
+
       <plugin>
         <!-- Flatten plugin is required for ${revision} to work -->
         <groupId>org.codehaus.mojo</groupId>
