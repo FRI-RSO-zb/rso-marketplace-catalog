@@ -1,7 +1,9 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
+import net.bobnar.marketplace.catalog.services.config.ServiceConfig;
+import net.bobnar.marketplace.common.dtos.catalog.v1.info.Info;
+import net.bobnar.marketplace.common.dtos.catalog.v1.info.VersionInfo;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -11,10 +13,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.inject.Inject;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Properties;
@@ -28,46 +28,7 @@ import java.util.Properties;
 public class InfoController {
 
     @Inject
-    private RestProperties restProperties;
-
-    @Schema(description = "Information about the instance.", example = """
-            {
-              "name": "catalogue",
-              "environment": "prod",
-              "version": "1.2.3-main-abcdef1"
-            }""")
-    public record Info(
-        @JsonProperty("name")
-        String name,
-        @JsonProperty("environment")
-        String environment,
-        @JsonProperty("version")
-        String version
-    ){}
-
-    @Schema(description = "Version information about the instance.",
-            example = """
-                    {
-                      "version": "1.2.3-main-abcdef1",
-                      "major": "1",
-                      "minor": "2",
-                      "patch": "3",
-                      "branchName": "main",
-                      "commitId": "abcdef1234567890abcdef1234567890abcdef12s",
-                      "shortCommitId": "abcdef1",
-                      "isDirty": false,
-                      "buildTime": "2023-12-05T12:00:00+0100"
-                    }""")
-    public record VersionInfo(
-        String version,
-        String major,
-        String minor,
-        String patch,
-        String branchName,
-        String commitId,
-        String shortCommitId,
-        boolean isDirty,
-        String buildTime) {}
+    private ServiceConfig serviceConfig;
 
     private static VersionInfo versionInfo;
 
@@ -80,9 +41,7 @@ public class InfoController {
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    content = @Content(
-                            schema = @Schema(implementation = Info.class)
-                    )
+                    content = @Content(schema = @Schema(implementation = Info.class))
             ),
             @APIResponse(
                     responseCode = "503",
@@ -96,6 +55,10 @@ public class InfoController {
                 config.get("kumuluzee.name").get(),
                 config.get("kumuluzee.env.name").get(),
                 config.get("kumuluzee.version").get());
+//        InfoDto info = new InfoDto();
+//        info.name = config.get("kumuluzee.name").get();
+//        info.environment = config.get("kumuluzee.env.name").get();
+//        info.version = config.get("kumuluzee.version").get();
 
         return Response.ok(info)
                 .build();
@@ -110,12 +73,8 @@ public class InfoController {
     )
     @APIResponses({
             @APIResponse(
-//                    responseCode = "200",
-//                    description = "Version information.",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = VersionInfo.class)
-                    )
+                    responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = VersionInfo.class))
             ),
             @APIResponse(
                     responseCode = "503",
@@ -133,31 +92,59 @@ public class InfoController {
 
     @POST
     @Path("debug/break")
+    @Operation(
+            summary = "Set the state of this service instance as broken",
+            description = "Set the state of this service instance as broken. Used to debug if the cluster will heal itself.",
+            hidden = true
+    )
     public Response debugBreakInstance() {
-        restProperties.setBroken(true);
+        serviceConfig.disable();
 
         return Response.ok()
                 .build();
     }
+
+//
+//    @GET
+//    @Path("2")
+//    @PermitAll
+//    @Operation(
+//            summary = "Get information about this service",
+//            description = "Returns the general information about the running instance"
+//    )
+//    @APIResponses({
+//            @APIResponse(
+//                    responseCode = "200",
+//                    content = @Content(schema = @Schema(implementation = Info.class))
+//            ),
+//            @APIResponse(
+//                    responseCode = "503",
+//                    description = "Server error. Possibly malformed service version information."
+//            )
+//    })
+//    public Response getInfo2() {
+//        ConfigurationUtil config = ConfigurationUtil.getInstance();
+//
+//        Info info = new Info();
+//        info.name = config.get("kumuluzee.name").get();
+//        info.environment = config.get("kumuluzee.env.name").get();
+//        info.version = config.get("kumuluzee.version").get();
+//
+//        return Response.ok(info)
+//                .build();
+//    }
+
+
 
     private void initializeVersionInfo() {
         Properties prop = new Properties();
         try {
             prop.load(InfoController.class.getResourceAsStream("/META-INF/service.properties"));
         } catch (Exception e) {
-            var log = Logger.getLogger(InfoController.class.getName());
-
-            throw new RuntimeException(e);
-        }
-        String version = prop.getProperty("catalogue.version");
-
-        prop = new Properties();
-        try {
-            prop.load(InfoController.class.getResourceAsStream("/META-INF/git.properties"));
-        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
+        String version = prop.getProperty("service.version");
         VersionInfo info = new VersionInfo(
                 version,
                 version.split("\\.")[0],

@@ -8,10 +8,16 @@
     <file url="file://$PROJECT_DIR$/catalogue/src/main/resources/properties" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/data/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/data/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dtos/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dtos/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/loader-agent/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/loader-agent/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/marketplace-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/marketplace-common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/models/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/models/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/services/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/services/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

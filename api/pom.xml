@@ -3,13 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <!-- Build information -->
+  <artifactId>marketplace-catalog-api</artifactId>
   <parent>
     <groupId>net.bobnar.marketplace</groupId>
     <artifactId>marketplace-catalog</artifactId>
     <version>${revision}</version>
   </parent>
-  <groupId>net.bobnar.marketplace</groupId>
-  <artifactId>marketplace-catalog-api</artifactId>
 
   <!-- Project information -->
   <name>Marketplace - Catalog API</name>
@@ -89,9 +88,20 @@
       <groupId>com.kumuluz.ee.logs</groupId>
     </dependency>
 
+    <dependency>
+        <groupId>net.bobnar.marketplace</groupId>
+        <artifactId>marketplace-common</artifactId>
+<!--        <scope>compile</scope>-->
+    </dependency>
+    <dependency>
+      <groupId>net.bobnar.marketplace</groupId>
+      <artifactId>marketplace-catalog-services</artifactId>
+<!--      <scope>compile</scope>-->
+    </dependency>
 
 
-<!--    CORS does not work properly in this setup!   -->
+
+    <!--    CORS does not work properly in this setup!   -->
 <!--    <dependency>-->
 <!--      <groupId>com.kumuluz.ee.cors</groupId>-->
 <!--      <artifactId>kumuluzee-cors</artifactId>-->
@@ -127,6 +137,19 @@
             <id>package</id>
             <goals>
               <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>kumuluzee-openapi-mp-maven-plugin</artifactId>
+        <groupId>com.kumuluz.ee.openapi</groupId>
+        <version>${kumuluzee-openapi-mp.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
             </goals>
           </execution>
         </executions>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
-<!--    <persistence-unit name="image-catalog-jpa" transaction-type="RESOURCE_LOCAL">-->
-    <persistence-unit name="marketplace-catalogue-jpa" transaction-type="RESOURCE_LOCAL">
-        <non-jta-data-source>jdbc/MarketplaceCatalogueDS</non-jta-data-source>
+    <persistence-unit name="marketplace-catalog-jpa" transaction-type="RESOURCE_LOCAL">
+        <non-jta-data-source>jdbc/MarketplaceCatalogDS</non-jta-data-source>
 
-        <class>net.bobnar.marketplace.catalogue.entities.AdEntity</class>
-        <class>net.bobnar.marketplace.catalogue.entities.SellerEntity</class>
+        <class>net.bobnar.marketplace.data.entities.EntityBase</class>
+        <class>net.bobnar.marketplace.data.entities.AdEntity</class>
+        <class>net.bobnar.marketplace.data.entities.SellerEntity</class>
 
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>

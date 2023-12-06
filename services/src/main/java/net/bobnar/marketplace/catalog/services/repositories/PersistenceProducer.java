@@ -1,4 +1,4 @@
-package net.bobnar.marketplace.catalogue.producers;
+package net.bobnar.marketplace.catalog.services.repositories;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Disposes;
@@ -8,7 +8,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
 public class PersistenceProducer {
-    @PersistenceUnit(unitName = "marketplace-catalogue-jpa")
+    @PersistenceUnit(unitName = "marketplace-catalog-jpa")
     private EntityManagerFactory emf;
 
     @Produces

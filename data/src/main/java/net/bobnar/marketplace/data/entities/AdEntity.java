@@ -1,25 +1,23 @@
-package net.bobnar.marketplace.catalogue.entities;
-
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+package net.bobnar.marketplace.data.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 
-@Schema
 @Entity
 @Table(name="ads")
 @NamedQuery(
         name="Ads.findAll",
         query="SELECT e FROM AdEntity e"
 )
-public class AdEntity implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+@NamedQuery(
+        name="Ads.findBySellerId",
+        query="SELECT e FROM AdEntity e WHERE e.sellerId=:sellerId"
+)
+public class AdEntity extends EntityBase implements Serializable {
     private String title;
     private String source;
     private String sourceId;
+    private Integer sellerId;
     private String originalUri;
     private String photoUri;
     private String brand;
@@ -139,14 +137,6 @@ public class AdEntity implements Serializable {
         this.price = price;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getSource() {
         return source;
     }
@@ -169,5 +159,13 @@ public class AdEntity implements Serializable {
 
     public void setOriginalUri(String orginalUri) {
         this.originalUri = orginalUri;
+    }
+
+    public Integer getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(Integer sellerId) {
+        this.sellerId = sellerId;
     }
 }

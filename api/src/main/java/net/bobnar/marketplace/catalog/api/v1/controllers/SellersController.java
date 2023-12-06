@@ -2,8 +2,8 @@ package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import com.kumuluz.ee.logs.cdi.Log;
 import com.kumuluz.ee.rest.beans.QueryParameters;
-import net.bobnar.marketplace.catalog.services.repositories.AdsRepository;
-import net.bobnar.marketplace.common.dtos.catalog.v1.ads.Ad;
+import net.bobnar.marketplace.catalog.services.repositories.SellersRepository;
+import net.bobnar.marketplace.common.dtos.catalog.v1.sellers.Seller;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.annotation.Metered;
@@ -32,35 +32,35 @@ import java.util.List;
 
 
 @Log
-@Path("ads")
-@Tag(name="Ads", description = "Endpoints for managing ad items.")
+@Path("sellers")
+@Tag(name="Sellers", description = "Endpoints for managing sellers.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
-public class AdsController {
-
-
-    @Inject
-    @Metric(name="ads_counter")
-    private ConcurrentGauge adsCounter;
+public class SellersController {
 
     @Inject
-    @Metric(name="ad_adding_meter")
-    private Meter adsAddingMeter;
+    @Metric(name="sellers_counter")
+    private ConcurrentGauge sellersCounter;
 
     @Inject
-    private AdsRepository ads;
+    @Metric(name="sellers_adding_meter")
+    private Meter sellersAddingMeter;
+
+    @Inject
+    SellersRepository sellers;
+
 
     @GET
     @Operation(
-            summary = "Get filtered list of ads",
-            description = "Filter the list of all ads with specified filter and return the results."
+            summary = "Get filtered sellers list",
+            description = "Get list of all sellers that match the specified filter."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Resulting list of ads.",
-                    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Ad.class)),
+                    description = "Resulting list of sellers.",
+                    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Seller.class)),
                     headers = {@Header(name = "X-Total-Count", schema = @Schema(type = SchemaType.INTEGER), description = "Total count of elements matching the query")}
             ),
             @APIResponse(
@@ -68,8 +68,8 @@ public class AdsController {
                     description = "Bad request. Malformed query."
             )
     })
-    @Timed(name="ads_get_timer")
-    public Response getAds(
+    @Timed(name="sellers_get_timer")
+    public Response getSellers(
             @QueryParam("limit")
             @Parameter(name = "limit",
                     description = "Limit the number of returned results",
@@ -88,14 +88,14 @@ public class AdsController {
                     name = "where",
                     in = ParameterIn.QUERY,
                     description = "Where filter",
-                    example = "sellerId:eq:1"
+                    example = "id:eq:1"
             )
             String where,
             @Context UriInfo uriInfo
     ) {
         QueryParameters query = this.getRequestQuery(uriInfo);
-        List<Ad> result = ads.getFilteredAds(query);
-        Long allItemsCount = ads.countQueriedItems(query);
+        List<Seller> result = sellers.getSellers(query);
+        Long allItemsCount = sellers.countQueriedItems(query);
 
         return Response
                 .ok(result)
@@ -106,8 +106,8 @@ public class AdsController {
     @GET
     @Path("count")
     @Operation(
-            summary = "Get count of ads that match specified filter",
-            description = "Filter the list of all ads and return the total count of all items."
+            summary = "Get count of sellers that match specified filter",
+            description = "Filter the list of all sellers and return the total count of all items."
     )
     @APIResponses({
             @APIResponse(
@@ -120,7 +120,7 @@ public class AdsController {
                     description = "Bad request. Malformed query."
             )
     })
-    @Timed(name="ads_count_timer")
+    @Timed(name="sellers_count_timer")
     public Response getCount(
             @QueryParam("limit")
             @Parameter(name = "limit",
@@ -145,103 +145,66 @@ public class AdsController {
             String where,
             @Context UriInfo uriInfo
     ) {
-        Long count = ads.countQueriedItems(this.getRequestQuery(uriInfo));
+        Long count = sellers.countQueriedItems(this.getRequestQuery(uriInfo));
 
         return Response.ok(count).build();
     }
 
     @GET
-    @Path("/by-seller/{sellerId}")
-    @Operation(
-            summary = "Get filtered list of ads from specified seller",
-            description = "Filter the list of all ads from seller with specified filter and return the results."
-    )
-    @APIResponses({
-            @APIResponse(
-                    responseCode = "200",
-                    description = "Resulting list of ads.",
-                    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Ad.class)),
-                    headers = {@Header(name = "X-Total-Count", schema = @Schema(type = SchemaType.INTEGER), description = "Total count of elements matching the query")}
-            ),
-            @APIResponse(
-                    responseCode = "403",
-                    description = "Bad request. Malformed query."
-            )
-    })
-    @Timed(name="ads_get_ads_by_seller_timer")
-    @Metered(name="ads_get_ads_by_sellers_meter")
-    public Response getSellerAds(
-            @Parameter(description = "Seller identifier", required = true) @PathParam("sellerId") Integer sellerId,
-            @QueryParam("limit")
-            @Parameter(name = "limit",
-                    description = "Limit the number of returned results",
-                    in = ParameterIn.QUERY,
-                    example = "10")
-            Integer limit
-    ) {
-        var result = ads.getAdsFromSeller(sellerId);
-
-        return Response
-                .ok(result)
-                .header("X-Total-Count", result.size())
-                .build();
-    }
-
-    @GET
     @Path("{id}")
     @Operation(
-            summary = "Get ad by id",
-            description = "Find the ad with the specified identifier."
+            summary = "Get seller by id",
+            description = "Find the seller with the specified identifier."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Resulting ad item.",
-                    content = @Content(schema = @Schema(implementation = Ad.class))
+                    description = "Resulting seller item.",
+                    content = @Content(schema = @Schema(implementation = Seller.class))
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Ad with specified id does not exist."
+                    description = "Seller with specified id does not exist."
             )
     })
-    @Timed(name="ads_get_ad_timer")
-    public Response getAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id) {
-        Ad result = ads.getAd(id);
+    @Timed(name="sellers_get_seller_timer")
+    public Response getSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id) {
+        Seller seller = sellers.getSeller(id);
 
-        return result != null ?
-                Response.ok(result).build() :
+        return seller != null ?
+                Response.ok(seller).build() :
                 Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @POST
     @Operation(
-            summary = "Create ad",
-            description = "Creates the ad item using specified details."
+            summary = "Create seller",
+            description = "Creates the seller item using specified details."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
-                    description = "Ad item created.",
-                    content = @Content(schema = @Schema(implementation = Ad.class))
+                    description = "Seller item created.",
+                    content = @Content(schema = @Schema(implementation = Seller.class))
             ),
             @APIResponse(
                     responseCode = "400",
                     description = "Invalid information specified."
             )
     })
-    @Timed(name="ads_create_timer")
-    @Metered(name="ads_create_meter")
-    public Response createAd(
-            @RequestBody(description = "Ad item", required = true, content = @Content(schema = @Schema(implementation = Ad.class)))
-            Ad item) {
+    @Timed(name="sellers_create_timer")
+    @Metered(name="sellers_create_meter")
+    public Response createSeller(
+            @RequestBody(description = "Seller item", required = true, content = @Content(schema = @Schema(implementation = Seller.class)))
+            Seller item) {
 
-        if (item.id() != null  || item.title() == null || item.source() == null || item.sellerId() == null) {
+        if (item.id() != null  || item.name() == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        item = ads.createAd(item);
-        this.adsAddingMeter.mark();
-        this.adsCounter.inc();
+        item = sellers.createSeller(item);
+        this.sellersAddingMeter.mark();
+        this.sellersCounter.inc();
 
         return Response.status(Response.Status.CREATED)
                 .entity(item)
@@ -251,14 +214,14 @@ public class AdsController {
     @PUT
     @Path("{id}")
     @Operation(
-            summary = "Update ad",
-            description = "Update the ad item using specified details."
+            summary = "Update seller",
+            description = "Update the seller item using specified details."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
                     description = "Ad item updated.",
-                    content = @Content(schema = @Schema(implementation = Ad.class))
+                    content = @Content(schema = @Schema(implementation = Seller.class))
             ),
             @APIResponse(
                     responseCode = "400",
@@ -266,13 +229,13 @@ public class AdsController {
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Ad with specified identifier not found."
+                    description = "Seller with specified identifier not found."
             )
     })
-    @Timed(name="ads_update_timer")
-    @Metered(name="ads_update_meter")
-    public Response updateAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id, Ad item) {
-        item = ads.updateAd(id, item);
+    @Timed(name="sellers_update_timer")
+    @Metered(name="sellers_update_meter")
+    public Response updateSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id, Seller item) {
+        item = sellers.updateSeller(id, item);
 
         return item != null ?
                 Response.ok(item).build() :
@@ -282,25 +245,25 @@ public class AdsController {
     @DELETE
     @Path("{id}")
     @Operation(
-            summary = "Remove ad",
-            description = "Removes the ad with specified identifier."
+            summary = "Remove seller",
+            description = "Removes the seller with specified identifier."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "204",
-                    description = "Ad was deleted."
+                    description = "Seller was deleted."
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Ad with specified identifier not found."
+                    description = "Seller with specified identifier not found."
             )
     })
-    @Timed(name="ad_delete_timer")
-    @Metered(name="ads_delete_meter")
-    public Response deleteAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id) {
-        boolean result = ads.deleteAd(id);
+    @Timed(name="sellers_delete_timer")
+    @Metered(name="sellers_delete_meter")
+    public Response deleteSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id) {
+        boolean result = sellers.deleteSeller(id);
 
-        adsCounter.dec();
+        sellersCounter.dec();
 
         return result ?
                 Response.noContent().build() :

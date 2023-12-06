@@ -1,30 +1,15 @@
-package net.bobnar.marketplace.catalogue.entities;
-
-
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+package net.bobnar.marketplace.data.entities;
 
 import javax.persistence.*;
 
-@Schema
 @Entity
 @Table(name="sellers")
 @NamedQuery(name="Sellers.findAll", query="SELECT e FROM SellerEntity e")
-public class SellerEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class SellerEntity extends EntityBase {
     private String name;
     private String location;
     private String contact;
 
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

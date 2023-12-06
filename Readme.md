@@ -1,4 +1,4 @@
-# Marketplace
+# Marketplace Catalog Service
 
 [![Run tests with Maven](https://github.com/FRI-RSO-zb/marketplace/actions/workflows/maven-run-tests.yml/badge.svg?branch=main)](https://github.com/FRI-RSO-zb/marketplace/actions/workflows/maven-run-tests.yml)
 
@@ -10,8 +10,8 @@
 `mvn clean package`
 
 To run:
-- `cd catalogue/target`
-- `java -jar catalogue-1.0.0-SNAPSHOT.jar`
+- `cd api/target`
+- `java -jar marketplace-catalog-api.jar`
 
 
 
@@ -55,5 +55,8 @@ Build image: `docker build -f Dockerfile.catalogue -t marketplace-catalogue .`
 Tag for upload to local registry: `docker tag marketplace-catalogue localhost:5050/marketplace-catalogue:debug`
 Upload to registry: `docker push localhost:5050/marketplace-catalogue:debug`
 
+
+### Notes:
+Important: JPA QueryParameters only work properly with java flag `--add-opens java.base/java.lang=ALL-UNNAMED` added.
 
 

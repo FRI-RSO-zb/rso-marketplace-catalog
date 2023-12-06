@@ -8,16 +8,17 @@ import org.eclipse.microprofile.openapi.annotations.info.License;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.servers.Server;
+import org.eclipse.microprofile.openapi.annotations.servers.ServerVariable;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 
-@SecurityScheme(
-        securitySchemeName = "openid-connect",
-        type = SecuritySchemeType.OPENIDCONNECT,
-        openIdConnectUrl = "https://id.marketplace.bobnar.net/.well-known/openid-configuration"
-)
+//@SecurityScheme(
+//        securitySchemeName = "openid-connect",
+//        type = SecuritySchemeType.OPENIDCONNECT,
+//        openIdConnectUrl = "https://id.marketplace.bobnar.net/.well-known/openid-configuration"
+//)
 @OpenAPIDefinition(
         info = @Info(
                 title = "Marketplace Catalog API",
@@ -27,9 +28,9 @@ import javax.ws.rs.core.Application;
                 license = @License(name = "MIT License", url = "https://opensource.org/license/mit/"),
                 termsOfService = "https://example.com/terms"
         ),
-        security = {
-                @SecurityRequirement(name = "openid-connect", scopes = {"a"})
-        },
+//        security = {
+//                @SecurityRequirement(name = "openid-connect", scopes = {"a"})
+//        },
         servers = {
                 @Server(
                         description = "Local development",
@@ -43,6 +44,28 @@ import javax.ws.rs.core.Application;
                         description = "Production deployment",
                         url = "https://catalog.marketplace.bobnar.net/"
                 ),
+                @Server(
+                        description = "Deployment on different url (https)",
+                        url = "https://{url}/",
+                        variables = {
+                                @ServerVariable(
+                                        name = "url",
+                                        description = "Url that is used to connect to server",
+                                        defaultValue = "catalog.marketplace.bobnar.net"
+                                )
+                        }
+                ),
+                @Server(
+                        description = "Deployment on different url (http)",
+                        url = "https://{url}/",
+                        variables = {
+                                @ServerVariable(
+                                        name = "url",
+                                        description = "Url that is used to connect to server",
+                                        defaultValue = "localhost:8002"
+                                )
+                        }
+                )
         }
 )
 //@DeclareRoles({"user", "admin"})
