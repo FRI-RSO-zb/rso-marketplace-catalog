@@ -1,10 +1,10 @@
-name: Build with Maven and package 'catalogue' as Docker image
+name: Build with Maven and package 'catalog' as Docker image
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "development" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "development" ]
 
 jobs:
   build:
@@ -34,6 +34,6 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v3
         with:
-          file: ./Dockerfile.catalogue
+          file: ./Dockerfile.catalog
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/rso-catalogue:${{ steps.current-time.outputs.formattedTime }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fri-rso-marketplace-catalog:${{ steps.current-time.outputs.formattedTime }}
