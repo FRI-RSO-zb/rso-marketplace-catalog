@@ -9,6 +9,6 @@ RUN --mount=type=cache,target=/root/.m2 mvn -f /app/pom.xml clean package
 FROM eclipse-temurin:17-jre
 RUN mkdir /app
 WORKDIR /app
-COPY --from=build ./api/target/marketplace-catalog-api.jar /app
+COPY --from=build /app/api/target/marketplace-catalog-api.jar /app
 #EXPOSE 8080
 CMD ["java", "-jar", "marketplace-catalog-api.jar"]
