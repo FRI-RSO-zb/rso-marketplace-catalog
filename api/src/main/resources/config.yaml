@@ -2,7 +2,7 @@ kumuluzee:
   name: catalog
   env:
     name: dev
-  version: ${git.build.version}
+  version: 1.1.2 #${git.build.version}
   server:
     #base-url: http://localhost:8001
     http:
@@ -53,5 +53,5 @@ kumuluzee:
         url-pattern: /metrics/*
       - name: adsEndpoint
         url-pattern: /v1/ads/*
-      - name: adsEndpoint
+      - name: sellersEndpoint
         url-pattern: /v1/sellers/*
