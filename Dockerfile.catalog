@@ -1,7 +1,7 @@
 # Image builder
 FROM maven:3.8.3-openjdk-17 AS build
 WORKDIR /app
-ADD .  /app
+ADD . /app
 RUN --mount=type=cache,target=/root/.m2 mvn -f /app/pom.xml clean package
 # TODO: Get project version with `mvn help:evaluate -Dexpression=project.version -q -DforceStdout`
 
@@ -9,6 +9,6 @@ RUN --mount=type=cache,target=/root/.m2 mvn -f /app/pom.xml clean package
 FROM eclipse-temurin:17-jre
 RUN mkdir /app
 WORKDIR /app
-COPY --from=build ./app/catalogue/target/catalogue-1.0.0-SNAPSHOT.jar /app
+COPY --from=build ./api/target/marketplace-catalog-api.jar /app
 #EXPOSE 8080
-CMD ["java", "-jar", "catalogue-1.0.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "marketplace-catalog-api.jar"]

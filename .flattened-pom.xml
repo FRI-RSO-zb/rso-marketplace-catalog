@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.bobnar.marketplace</groupId>
   <artifactId>marketplace-catalog</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.2</version>
   <packaging>pom</packaging>
   <name>Marketplace Catalog</name>
   <description>Marketplace catalog microservice.</description>
@@ -36,7 +36,7 @@
     <kumuluzee-cors.version>2.0.0</kumuluzee-cors.version>
     <kumuluzee-security.version>1.2.0</kumuluzee-security.version>
     <maven.compiler.source>17</maven.compiler.source>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <revision>${version}</revision>
     <kumuluzee-metrics.version>3.0.0</kumuluzee-metrics.version>
     <maven.compiler.target>17</maven.compiler.target>
@@ -159,20 +159,6 @@
   </dependencyManagement>
   <build>
     <plugins>
-      <plugin>
-        <groupId>io.github.git-commit-id</groupId>
-        <artifactId>git-commit-id-maven-plugin</artifactId>
-        <version>5.0.0</version>
-        <executions>
-          <execution>
-            <id>get-the-git-infos</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>revision</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
