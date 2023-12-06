@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Build information -->
+  <artifactId>marketplace-catalog-data</artifactId>
+  <parent>
+    <groupId>net.bobnar.marketplace</groupId>
+    <artifactId>marketplace-catalog</artifactId>
+    <version>${revision}</version>
+  </parent>
+
+  <!-- Project information -->
+  <name>Marketplace - Catalog Data Persistence</name>
+  <description>Data persistence layer for marketplace catalog.</description>
+
+  <dependencies>
+    <!-- Data Persistence -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.kumuluz.ee</groupId>
+      <artifactId>kumuluzee-jpa-eclipselink</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>net.bobnar.marketplace</groupId>
+      <artifactId>marketplace-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>
