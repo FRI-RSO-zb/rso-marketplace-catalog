@@ -49,6 +49,6 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v3
         with:
-          file: ./Dockerfile.catalog
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fri-rso-marketplace-catalog:${{ github.ref_name }}-${{ github.sha }}
