@@ -26,7 +26,7 @@
     </dependency>
 
     <dependency>
-      <groupId>net.bobnar.marketplace</groupId>
+      <groupId>net.bobnar.marketplace.common</groupId>
       <artifactId>marketplace-common</artifactId>
       <scope>provided</scope>
     </dependency>
