@@ -1,4 +1,4 @@
-name: Build with Maven and package 'catalog' as Docker image
+name: Build and publish Docker image
 
 on:
   push:
@@ -23,17 +23,32 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Cache maven m2
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-mvn-dependencies-marketplace-catalog
+        with:
+          path: |
+            ~/.m2/repository
+            /root/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('./pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v3
         with:
           file: ./Dockerfile.catalog
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fri-rso-marketplace-catalog:${{ steps.current-time.outputs.formattedTime }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fri-rso-marketplace-catalog:${{ github.ref_name }}-${{ github.sha }}

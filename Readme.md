@@ -1,8 +1,9 @@
-# Marketplace Catalog Service
+# Marketplace Catalog Service [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/zigabobnar/fri-rso-marketplace-catalog?label=Latest%20Docker%20Hub%20Image)](https://hub.docker.com/r/zigabobnar/fri-rso-marketplace-catalog)
 
-[![Build with Maven and package 'catalog' as Docker image (main)](https://github.com/FRI-RSO-zb/rso-marketplace-catalog/actions/workflows/build-and-publish-docker-image-catalog.yml/badge.svg?branch=main)](https://github.com/FRI-RSO-zb/rso-marketplace-catalog/actions/workflows/build-and-publish-docker-image-catalog.yml)
-
-[![Build with Maven and package 'catalog' as Docker image (development)](https://github.com/FRI-RSO-zb/rso-marketplace-catalog/actions/workflows/build-and-publish-docker-image-catalog.yml/badge.svg?branch=development)](https://github.com/FRI-RSO-zb/rso-marketplace-catalog/actions/workflows/build-and-publish-docker-image-catalog.yml)
+| Branch | Status                                                                                                                                                                                                                                                                                                                                          |
+|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| main | [![Build with Maven and package 'catalog' as Docker image (main)](https://github.com/FRI-RSO-zb/rso-marketplace-catalog/actions/workflows/build-and-publish-docker-image-catalog.yml/badge.svg?branch=main)](https://github.com/FRI-RSO-zb/rso-marketplace-catalog/actions/workflows/build-and-publish-docker-image-catalog.yml)                |
+| development | [![Build with Maven and package 'catalog' as Docker image (development)](https://github.com/FRI-RSO-zb/rso-marketplace-catalog/actions/workflows/build-and-publish-docker-image-catalog.yml/badge.svg?branch=development)](https://github.com/FRI-RSO-zb/rso-marketplace-catalog/actions/workflows/build-and-publish-docker-image-catalog.yml)  |
 
 ## Build
 `mvn clean package`
