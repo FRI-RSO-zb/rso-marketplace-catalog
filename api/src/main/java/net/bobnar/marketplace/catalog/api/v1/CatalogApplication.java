@@ -34,20 +34,21 @@ import javax.ws.rs.core.Application;
         servers = {
                 @Server(
                         description = "Local development",
-                        url = "http://localhost:8002/"
+                        url = "http://localhost:8801/"
                 ),
                 @Server(
-                        description = "Local kubernetes cluster deployment",
-                        url = "http://catalog.marketplace.local:8888/"
-                ),
-                @Server(
-                        description = "Production deployment",
-                        url = "https://catalog.marketplace.bobnar.net/"
-                ),
-                @Server(
-                        description = "Deployment on different url (https)",
-                        url = "https://{url}/",
+                        description = "Deployment on different url",
+                        url = "{schema}://{url}/",
                         variables = {
+                                @ServerVariable(
+                                        name = "schema",
+                                        description = "Schema that is used to connect to server",
+                                        defaultValue = "https",
+                                        enumeration = {
+                                                "http",
+                                                "https"
+                                        }
+                                ),
                                 @ServerVariable(
                                         name = "url",
                                         description = "Url that is used to connect to server",
@@ -56,15 +57,12 @@ import javax.ws.rs.core.Application;
                         }
                 ),
                 @Server(
-                        description = "Deployment on different url (http)",
-                        url = "https://{url}/",
-                        variables = {
-                                @ServerVariable(
-                                        name = "url",
-                                        description = "Url that is used to connect to server",
-                                        defaultValue = "localhost:8002"
-                                )
-                        }
+                        description = "Local kubernetes cluster deployment",
+                        url = "http://catalog.marketplace.local:8888/"
+                ),
+                @Server(
+                        description = "Production deployment",
+                        url = "https://catalog.marketplace.bobnar.net/"
                 )
         }
 )

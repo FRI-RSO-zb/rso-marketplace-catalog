@@ -1,5 +1,6 @@
 # kubectl create namespace marketplace
 
+# TODO: Move to other repo.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,26 +31,12 @@ spec:
         imagePullPolicy: Always
         ports:
           - name:  server
-            containerPort:  8002
+            containerPort:  8802
         env:
           - name: KUMULUZEE_ENV_NAME
             value: local_cluster
           - name: KUMULUZEE_SERVER_BASEURL
-#            value: http://localhost:8001/
-            value: http://loader-agent.marketplace.local:8888/
-#          - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
-            # Through vpn:
-#            value: jdbc:postgresql://pg.n1.ts.bobnar.net:15432/marketplace_catalogue_db
-            # Local:
-#            value: jdbc:postgresql://localhost:15432/marketplace_catalogue_db
-            # Direct access
-#            value: jdbc:postgresql://10.10.10.11:15432/marketplace_catalogue_db
-#          - name: KUMULUZEE_DATASOURCES0_USERNAME
-#            value: marketplace_catalogue_user
-#          - name: KUMULUZEE_DATASOURCES0_PASSWORD
-#            value: 'vbuJ8as4C4rbpS2RYmx3'
-#          - name: KUMULUZEE_DATASOURCES0_POOL_MAXSIZE
-#            value: '8'
+            value: http://loader-agent.marketplace.local/
         livenessProbe:
           httpGet:
             path: /health/live
@@ -82,7 +69,7 @@ spec:
     #tier: backend
   ports:
     - protocol: TCP
-      port: 8002
+      port: 8802
       targetPort: server
 
 ---
@@ -105,4 +92,4 @@ spec:
               service:
                 name: marketplace-loader-agent
                 port:
-                  number: 8002
+                  number: 8802

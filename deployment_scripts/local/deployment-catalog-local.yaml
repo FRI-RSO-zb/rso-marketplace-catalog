@@ -3,14 +3,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: marketplace-catalogue
+  name: marketplace-catalog
 #  namespace: marketplace
   labels:
-    app:  marketplace-catalogue
+    app:  marketplace-catalog
 spec:
   selector:
     matchLabels:
-      app: marketplace-catalogue
+      app: marketplace-catalog
       tier: backend
   replicas: 1
 #  strategy:
@@ -21,33 +21,27 @@ spec:
   template:
     metadata:
       labels:
-        app:  marketplace-catalogue
+        app:  marketplace-catalog
         tier: backend
     spec:
       containers:
-      - name:  marketplace-catalogue
-        image:  k3d-test-registry:5050/marketplace-catalogue:v1.0.0-1
+      - name:  marketplace-catalog
+        image:  k3d-test-registry:5050/fri-rso-marketplace-catalog:v1.1.4
         imagePullPolicy: Always
         ports:
           - name:  server
-            containerPort:  8001
+            containerPort:  8801
         env:
           - name: KUMULUZEE_ENV_NAME
             value: local_cluster
           - name: KUMULUZEE_SERVER_BASEURL
-#            value: http://localhost:8001/
-            value: http://catalogue.marketplace.local:8888/
+            value: http://catalog.marketplace.local/
           - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
-            # Through vpn:
-            value: jdbc:postgresql://pg.n1.ts.bobnar.net:15432/marketplace_catalogue_db
-            # Local:
-#            value: jdbc:postgresql://localhost:15432/marketplace_catalogue_db
-            # Direct access
-#            value: jdbc:postgresql://10.10.10.11:15432/marketplace_catalogue_db
+            value: jdbc:postgresql://localhost:5432/marketplace_catalog_db
           - name: KUMULUZEE_DATASOURCES0_USERNAME
-            value: marketplace_catalogue_user
+            value: marketplace_catalog_user
           - name: KUMULUZEE_DATASOURCES0_PASSWORD
-            value: 'vbuJ8as4C4rbpS2RYmx3'
+            value: 'vbuJ8as4C4rbpS2RYmx3LocalTesting'
           - name: KUMULUZEE_DATASOURCES0_POOL_MAXSIZE
             value: '8'
         livenessProbe:
@@ -74,15 +68,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: marketplace-catalogue
+  name: marketplace-catalog
 #  namespace: marketplace
 spec:
   selector:
-    app: marketplace-catalogue
+    app: marketplace-catalog
     #tier: backend
   ports:
     - protocol: TCP
-      port: 8001
+      port: 8801
       targetPort: server
 
 
@@ -93,7 +87,7 @@ spec:
 #apiVersion: networking.k8s.io/v1
 #kind: Ingress
 #metadata:
-#  name: marketplace-catalogue
+#  name: marketplace-catalog
 #  annotations:
 #    ingress.kubernetes.io/ssl-redirect: "false"
 #spec:
@@ -105,9 +99,9 @@ spec:
 #            pathType: Prefix
 #            backend:
 #              service:
-#                name: marketplace-catalogue
+#                name: marketplace-catalog
 #                port:
-#                  number: 8001
+#                  number: 8801
 #
 
 ---
@@ -115,22 +109,22 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: marketplace-catalogue
+  name: marketplace-catalog
 #  namespace: marketplace
   annotations:
     ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-    - host: "catalogue.marketplace.local"
+    - host: "catalog.marketplace.local"
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: marketplace-catalogue
+                name: marketplace-catalog
                 port:
-                  number: 8001
+                  number: 8801
 
 #     - http:
 #        paths:
@@ -140,8 +134,8 @@ spec:
 #            pathType: ImplementationSpecific
 #            backend:
 #              service:
-#                name: marketplace-catalogue
+#                name: marketplace-catalog
 #                port:
-#                  number: 8001
+#                  number: 8801
 #
 #

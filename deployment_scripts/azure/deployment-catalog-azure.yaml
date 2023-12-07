@@ -1,0 +1,102 @@
+# kubectl create namespace marketplace
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketplace-catalog
+#  namespace: marketplace
+  labels:
+    app:  marketplace-catalog
+spec:
+  selector:
+    matchLabels:
+      app: marketplace-catalog
+      tier: backend
+  replicas: 1
+#  strategy:
+#    rollingUpdate:
+#      maxSurge: 25%
+#      maxUnavailable: 25%
+#    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  marketplace-catalog
+        tier: backend
+    spec:
+      containers:
+      - name:  marketplace-catalog
+        image:  zigabobnar/fri-rso-marketplace-catalog:main-d34e8fe2f8c9afad9d24e720abb4adb9743ee100
+        imagePullPolicy: Always
+        ports:
+          - name:  server
+            containerPort:  8801
+        env:
+          - name: KUMULUZEE_ENV_NAME
+            value: azure_cluster
+          - name: KUMULUZEE_SERVER_BASEURL
+            value: https://catalog.<DEPLOYMENT_ID>.northeurope.aksapp.io/
+          - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
+            value:  jdbc:postgresql://<POSTGRES_DB_NAME>.postgres.database.azure.com:5432/marketplace_catalog
+          - name: KUMULUZEE_DATASOURCES0_USERNAME
+            value: frirsomarketplacecatalogadmin
+          - name: KUMULUZEE_DATASOURCES0_PASSWORD
+            value: 'SL5RiMPnt7BwkWhF6H3YhUgUAzureDeployment'
+          - name: KUMULUZEE_DATASOURCES0_POOL_MAXSIZE
+            value: '8'
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: server
+          initialDelaySeconds: 10
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: server
+          initialDelaySeconds: 15
+          timeoutSeconds: 4
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: marketplace-catalog
+#  namespace: marketplace
+spec:
+  # type: LoadBalancer
+  type: ClusterIP
+  selector:
+    app: marketplace-catalog
+    #tier: backend
+  ports:
+    - protocol: TCP
+      port: 8801
+      targetPort: server
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: marketplace-catalog
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: catalog.<DEPLOYMENT_ID>.northeurope.aksapp.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: marketplace-catalog
+            port:
+              number: 8801

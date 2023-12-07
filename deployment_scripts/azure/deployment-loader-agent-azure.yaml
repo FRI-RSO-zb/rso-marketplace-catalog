@@ -1,0 +1,92 @@
+# kubectl create namespace marketplace
+
+# TODO: Move to other repo.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketplace-loader-agent
+#  namespace: marketplace
+  labels:
+    app:  marketplace-loader-agent
+spec:
+  selector:
+    matchLabels:
+      app: marketplace-loader-agent
+      tier: backend
+  replicas: 1
+#  strategy:
+#    rollingUpdate:
+#      maxSurge: 25%
+#      maxUnavailable: 25%
+#    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  marketplace-loader-agent
+        tier: backend
+    spec:
+      containers:
+      - name:  marketplace-loader-agent
+        image: zigabobnar/fri-rso-loader-agent:2023-12-06-22-45-06
+        imagePullPolicy: Always
+        ports:
+          - name:  server
+            containerPort:  8802
+        env:
+          - name: KUMULUZEE_ENV_NAME
+            value: azure_cluster
+          - name: KUMULUZEE_SERVER_BASEURL
+            value: https://loader-agent.<DEPLOYMENT_ID>.northeurope.aksapp.io/
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: server
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: server
+          initialDelaySeconds: 8
+          timeoutSeconds: 4
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: marketplace-loader-agent
+spec:
+  type: ClusterIP
+  selector:
+    app: marketplace-loader-agent
+  ports:
+    - protocol: TCP
+      port: 8802
+      # targetPort: server
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: marketplace-loader-agent
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: loader-agent.<DEPLOYMENT_ID>.northeurope.aksapp.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: marketplace-loader-agent
+            port:
+              number: 8802

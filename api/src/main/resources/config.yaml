@@ -3,7 +3,7 @@ kumuluzee:
   name: catalog
   env:
     name: dev
-  version: 1.1.3 #${git.build.version}
+  version: 1.1.4 #${git.build.version}
 
   server:
 #    base-url: http://localhost:8801 # Not needed when working from localhost
