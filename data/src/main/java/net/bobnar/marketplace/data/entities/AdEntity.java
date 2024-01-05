@@ -1,5 +1,7 @@
 package net.bobnar.marketplace.data.entities;
 
+import net.bobnar.marketplace.common.dtos.catalog.v1.ads.Ad;
+import net.bobnar.marketplace.data.converters.AdConverter;
 import net.bobnar.marketplace.data.enums.BodyType;
 import net.bobnar.marketplace.data.enums.EngineType;
 import net.bobnar.marketplace.data.enums.StateType;
@@ -18,15 +20,37 @@ import java.io.Serializable;
         name="Ads.findBySellerId",
         query="SELECT e FROM AdEntity e WHERE e.sellerId=:sellerId"
 )
-public class AdEntity extends EntityBase implements Serializable {
+@NamedQuery(
+        name="Ads.findByBrandId",
+        query="SELECT e FROM AdEntity e WHERE e.brandId=:brandId"
+)
+@NamedQuery(
+        name="Ads.findByModelId",
+        query="SELECT e FROM AdEntity e WHERE e.modelId=:modelId"
+)
+public class AdEntity extends EntityBase<Ad> implements Serializable {
     private String title;
     private String source;
     private String sourceId;
+
+    @ManyToOne
+    @JoinColumn(name="sellerid", insertable = false, updatable = false)
+    private SellerEntity seller;
     private Integer sellerId;
+
     private String originalUri;
     private String photoUri;
-    private String brand;
-    private String model;
+
+    @ManyToOne
+    @JoinColumn(name="brandid", insertable = false, updatable = false)
+    private CarBrandEntity brand;
+    private Integer brandId;
+
+    @ManyToOne
+    @JoinColumn(name="modelid", insertable = false, updatable = false)
+    private CarModelEntity model;
+    private Integer modelId;
+
     private int firstRegistrationYear;
     private int firstRegistrationMonth;
     private int drivenDistanceKm;
@@ -42,6 +66,26 @@ public class AdEntity extends EntityBase implements Serializable {
     private String otherData;
     private double price;
 
+
+    public SellerEntity getSeller() {
+        return seller;
+    }
+
+    public Integer getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Integer brandId) {
+        this.brandId = brandId;
+    }
+
+    public Integer getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(Integer modelId) {
+        this.modelId = modelId;
+    }
 
     public String getSourceId() {
         return sourceId;
@@ -59,21 +103,21 @@ public class AdEntity extends EntityBase implements Serializable {
         this.photoUri = photoUri;
     }
 
-    public String getBrand() {
+    public CarBrandEntity getBrand() {
         return brand;
     }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
+//    public void setBrand(CarBrandEntity brand) {
+//        this.brand = brand;
+//    }
 
-    public String getModel() {
+    public CarModelEntity getModel() {
         return model;
     }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
+//    public void setModel(CarModelEntity model) {
+//        this.model = model;
+//    }
 
     public int getFirstRegistrationYear() {
         return firstRegistrationYear;
@@ -185,5 +229,10 @@ public class AdEntity extends EntityBase implements Serializable {
 
     public void setSellerId(Integer sellerId) {
         this.sellerId = sellerId;
+    }
+
+    @Override
+    public Ad toDto() {
+        return AdConverter.getInstance().toDto(this);
     }
 }

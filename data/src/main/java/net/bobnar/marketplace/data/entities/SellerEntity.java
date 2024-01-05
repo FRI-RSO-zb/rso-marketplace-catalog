@@ -1,15 +1,28 @@
 package net.bobnar.marketplace.data.entities;
 
+import net.bobnar.marketplace.common.dtos.catalog.v1.sellers.Seller;
+import net.bobnar.marketplace.data.converters.SellerConverter;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="sellers")
 @NamedQuery(name="Sellers.findAll", query="SELECT e FROM SellerEntity e")
-public class SellerEntity extends EntityBase {
+public class SellerEntity extends EntityBase<Seller> {
     private String name;
     private String location;
     private String contact;
+    @OneToMany(mappedBy = "seller")
+    private List<AdEntity> ads;
 
+    public List<AdEntity> getAds() {
+        return ads;
+    }
+
+    public void setAds(List<AdEntity> ads) {
+        this.ads = ads;
+    }
 
     public String getName() {
         return name;
@@ -33,5 +46,10 @@ public class SellerEntity extends EntityBase {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    @Override
+    public Seller toDto() {
+        return SellerConverter.getInstance().toDto(this);
     }
 }

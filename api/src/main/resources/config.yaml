@@ -19,13 +19,18 @@ kumuluzee:
       - marketplace-common
 
   graphql:
-    scanning:
-      optimize: false
-    schema:
-      include-scalars: true
-      include-schema-definition: true
-      include-directives: true
-      include-introspection-types: true
+    ui:
+      enabled: true
+    defaults:
+      offset: 0
+      limit: 20
+#    scanning:
+#      optimize: false
+#    schema:
+#      include-scalars: true
+#      include-schema-definition: true
+#      include-directives: true
+#      include-introspection-types: true
 
 #  security:
 #    keycloak:

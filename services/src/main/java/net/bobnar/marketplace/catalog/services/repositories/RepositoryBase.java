@@ -2,6 +2,8 @@ package net.bobnar.marketplace.catalog.services.repositories;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
+import net.bobnar.marketplace.common.dtos.ItemBase;
+import net.bobnar.marketplace.common.dtos.catalog.v1.ads.Ad;
 import net.bobnar.marketplace.data.converters.ConverterBase;
 import net.bobnar.marketplace.data.entities.AdEntity;
 import net.bobnar.marketplace.data.entities.EntityBase;
@@ -9,8 +11,9 @@ import net.bobnar.marketplace.data.entities.EntityBase;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public abstract class RepositoryBase<T extends EntityBase, TDto> {
+public abstract class RepositoryBase<T extends EntityBase, TDto extends ItemBase> {
 
     @Inject
     private EntityManager em;
@@ -39,10 +42,30 @@ public abstract class RepositoryBase<T extends EntityBase, TDto> {
         return entity;
     }
 
+    public T getEntity(Integer id) {
+        return this.get(id);
+    }
+
+    public TDto getItem(Integer id) {
+        TDto item = this.toDto(this.get(id));
+
+        return item;
+    }
+
     protected List<T> find(QueryParameters query) {
         List<T> entities = JPAUtils.queryEntities(this.em, this.getEntityClass(), query);
 
         return entities;
+    }
+
+    public List<T> findEntities(QueryParameters query) {
+        return this.find(query);
+    }
+
+    public List<TDto> findItems(QueryParameters query) {
+        List<T> result = this.find(query);
+
+        return result.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     protected void persistNonTransactional(T entity) {
@@ -60,6 +83,17 @@ public abstract class RepositoryBase<T extends EntityBase, TDto> {
         }
     }
 
+    public TDto createItem(TDto item) {
+        T entity = this.toEntity(item);
+        this.persist(entity);
+
+        if (entity.getId() == null) {
+            throw new RuntimeException("Unable to save item " + item.getClass().getName());
+        }
+
+        return this.toDto(entity);
+    }
+
     protected T update(Integer id, T updateEntity) {
         T entity = this.get(id);
         if (entity == null) {
@@ -69,6 +103,12 @@ public abstract class RepositoryBase<T extends EntityBase, TDto> {
         this.merge(entity, updateEntity);
 
         return updateEntity;
+    }
+
+    public TDto updateItem(Integer id, TDto item) {
+        T updated = this.update(id, this.toEntity(item));
+
+        return this.toDto(updated);
     }
 
     protected void merge(T sourceEntity, T updateEntity) {
@@ -104,6 +144,18 @@ public abstract class RepositoryBase<T extends EntityBase, TDto> {
         return true;
     }
 
+    public boolean deleteItem(Integer id) {
+        return this.delete(id);
+    }
+
+    public boolean deleteItem(TDto item) {
+        if (item != null) {
+            return this.delete(item.getId());
+        }
+
+        return false;
+    }
+
     protected Long countQueriedItems(QueryParameters query) {
         return JPAUtils.queryEntitiesCount(this.em, this.getEntityClass(), query);
     }
@@ -124,7 +176,7 @@ public abstract class RepositoryBase<T extends EntityBase, TDto> {
                 null;
     }
 
-    protected EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return this.em;
     }
 }

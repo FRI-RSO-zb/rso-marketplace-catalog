@@ -49,7 +49,7 @@ public class AdsController {
 //    private Meter adsAddingMeter;
 
     @Inject
-    private AdsRepository ads;
+    private AdsRepository repo;
 
     @GET
     @Operation(
@@ -94,8 +94,8 @@ public class AdsController {
             @Context UriInfo uriInfo
     ) {
         QueryParameters query = this.getRequestQuery(uriInfo);
-        List<Ad> result = ads.getFilteredAds(query);
-        Long allItemsCount = ads.countQueriedItems(query);
+        List<Ad> result = repo.findItems(query);
+        Long allItemsCount = repo.countQueriedItems(query);
 
         return Response
                 .ok(result)
@@ -145,7 +145,7 @@ public class AdsController {
             String where,
             @Context UriInfo uriInfo
     ) {
-        Long count = ads.countQueriedItems(this.getRequestQuery(uriInfo));
+        Long count = repo.countQueriedItems(this.getRequestQuery(uriInfo));
 
         return Response.ok(count).build();
     }
@@ -179,7 +179,7 @@ public class AdsController {
                     example = "10")
             Integer limit
     ) {
-        var result = ads.getAdsFromSeller(sellerId);
+        var result = repo.getAdsFromSeller(sellerId);
 
         return Response
                 .ok(result)
@@ -206,7 +206,7 @@ public class AdsController {
     })
 //    @Timed(name="ads_get_ad_timer")
     public Response getAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id) {
-        Ad result = ads.getAd(id);
+        Ad result = repo.getItem(id);
 
         return result != null ?
                 Response.ok(result).build() :
@@ -235,11 +235,11 @@ public class AdsController {
             @RequestBody(description = "Ad item", required = true, content = @Content(schema = @Schema(implementation = Ad.class)))
             Ad item) {
 
-        if (item.id() != null  || item.title() == null || item.source() == null || item.sellerId() == null) {
+        if (item.getId() != null  || item.getTitle() == null || item.getSource() == null || item.getSellerId() == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        item = ads.createAd(item);
+        item = repo.createItem(item);
 //        this.adsAddingMeter.mark();
 //        this.adsCounter.inc();
 
@@ -272,7 +272,7 @@ public class AdsController {
 //    @Timed(name="ads_update_timer")
 //    @Metered(name="ads_update_meter")
     public Response updateAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id, Ad item) {
-        item = ads.updateAd(id, item);
+        item = repo.updateItem(id, item);
 
         return item != null ?
                 Response.ok(item).build() :
@@ -298,7 +298,7 @@ public class AdsController {
 //    @Timed(name="ad_delete_timer")
 //    @Metered(name="ads_delete_meter")
     public Response deleteAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id) {
-        boolean result = ads.deleteAd(id);
+        boolean result = repo.deleteItem(id);
 
 //        adsCounter.dec();
 

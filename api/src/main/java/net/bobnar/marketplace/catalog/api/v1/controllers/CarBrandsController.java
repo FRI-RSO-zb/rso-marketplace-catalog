@@ -2,13 +2,11 @@ package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import com.kumuluz.ee.logs.cdi.Log;
 import com.kumuluz.ee.rest.beans.QueryParameters;
-import net.bobnar.marketplace.catalog.services.repositories.SellersRepository;
+import net.bobnar.marketplace.catalog.services.repositories.CarBrandsRepository;
+import net.bobnar.marketplace.catalog.services.repositories.CarModelsRepository;
+import net.bobnar.marketplace.common.dtos.catalog.v1.carBrands.CarBrand;
+import net.bobnar.marketplace.common.dtos.catalog.v1.carModels.CarModel;
 import net.bobnar.marketplace.common.dtos.catalog.v1.sellers.Seller;
-//import org.eclipse.microprofile.metrics.ConcurrentGauge;
-//import org.eclipse.microprofile.metrics.Meter;
-//import org.eclipse.microprofile.metrics.annotation.Metered;
-//import org.eclipse.microprofile.metrics.annotation.Metric;
-//import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -32,35 +30,38 @@ import java.util.List;
 
 
 @Log
-@Path("sellers")
-@Tag(name="Sellers", description = "Endpoints for managing sellers.")
+@Path("brands")
+@Tag(name="Car Brands", description = "Endpoints for managing car brands.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
-public class SellersController {
+public class CarBrandsController {
 
 //    @Inject
 //    @Metric(name="sellers_counter")
-//    private ConcurrentGauge sellersCounter;
+//    private ConcurrentGauge itemsCounter;
 //
 //    @Inject
 //    @Metric(name="sellers_adding_meter")
-//    private Meter sellersAddingMeter;
+//    private Meter itemsAddingMeter;
 
     @Inject
-    SellersRepository repo;
+    CarBrandsRepository repo;
+
+    @Inject
+    CarModelsRepository modelsRepo;
 
 
     @GET
     @Operation(
-            summary = "Get filtered sellers list",
-            description = "Get list of all sellers that match the specified filter."
+            summary = "Get filtered car brands list",
+            description = "Get list of all car brands that match the specified filter."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Resulting list of sellers.",
-                    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Seller.class)),
+                    description = "Resulting list of car brands.",
+                    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = CarBrand.class)),
                     headers = {@Header(name = "X-Total-Count", schema = @Schema(type = SchemaType.INTEGER), description = "Total count of elements matching the query")}
             ),
             @APIResponse(
@@ -68,8 +69,8 @@ public class SellersController {
                     description = "Bad request. Malformed query."
             )
     })
-//    @Timed(name="sellers_get_timer")
-    public Response getSellers(
+//    @Timed(name="brands_get_timer")
+    public Response getBrands(
             @QueryParam("limit")
             @Parameter(name = "limit",
                     description = "Limit the number of returned results",
@@ -88,13 +89,13 @@ public class SellersController {
                     name = "where",
                     in = ParameterIn.QUERY,
                     description = "Where filter",
-                    example = "id:eq:1"
+                    example = "primaryIdentifier:eq:vw"
             )
             String where,
             @Context UriInfo uriInfo
     ) {
         QueryParameters query = this.getRequestQuery(uriInfo);
-        List<Seller> result = repo.findItems(query);
+        List<CarBrand> result = repo.findItems(query);
         Long allItemsCount = repo.countQueriedItems(query);
 
         return Response
@@ -104,10 +105,36 @@ public class SellersController {
     }
 
     @GET
+    @Path("{id}")
+    @Operation(
+            summary = "Get car brand by id",
+            description = "Find the car brand with the specified identifier."
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Resulting car brand item.",
+                    content = @Content(schema = @Schema(implementation = Seller.class))
+            ),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "Car brand with specified id does not exist."
+            )
+    })
+//    @Timed(name="sellers_get_seller_timer")
+    public Response getBrand(@Parameter(description = "Car brand identifier.", required = true) @PathParam("id") Integer id) {
+        CarBrand item = repo.getItem(id);
+
+        return item != null ?
+                Response.ok(item).build() :
+                Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @GET
     @Path("count")
     @Operation(
-            summary = "Get count of sellers that match specified filter",
-            description = "Filter the list of all sellers and return the total count of all items."
+            summary = "Get count of car brands that match specified filter",
+            description = "Filter the list of all car brands and return the total count of all items."
     )
     @APIResponses({
             @APIResponse(
@@ -120,7 +147,7 @@ public class SellersController {
                     description = "Bad request. Malformed query."
             )
     })
-//    @Timed(name="sellers_count_timer")
+//    @Timed(name="brands_count_timer")
     public Response getCount(
             @QueryParam("limit")
             @Parameter(name = "limit",
@@ -140,7 +167,7 @@ public class SellersController {
                     name = "where",
                     in = ParameterIn.QUERY,
                     description = "Where filter",
-                    example = "sellerId:eq:1"
+                    example = "primaryIdentifier:eq:vw"
             )
             String where,
             @Context UriInfo uriInfo
@@ -150,53 +177,27 @@ public class SellersController {
         return Response.ok(count).build();
     }
 
-    @GET
-    @Path("{id}")
-    @Operation(
-            summary = "Get seller by id",
-            description = "Find the seller with the specified identifier."
-    )
-    @APIResponses({
-            @APIResponse(
-                    responseCode = "200",
-                    description = "Resulting seller item.",
-                    content = @Content(schema = @Schema(implementation = Seller.class))
-            ),
-            @APIResponse(
-                    responseCode = "404",
-                    description = "Seller with specified id does not exist."
-            )
-    })
-//    @Timed(name="sellers_get_seller_timer")
-    public Response getSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id) {
-        Seller item = repo.getItem(id);
-
-        return item != null ?
-                Response.ok(item).build() :
-                Response.status(Response.Status.NOT_FOUND).build();
-    }
-
     @POST
     @Operation(
-            summary = "Create seller",
-            description = "Creates the seller item using specified details."
+            summary = "Create car brand",
+            description = "Creates the car brand item using specified details."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
-                    description = "Seller item created.",
-                    content = @Content(schema = @Schema(implementation = Seller.class))
+                    description = "Car brand item created.",
+                    content = @Content(schema = @Schema(implementation = CarBrand.class))
             ),
             @APIResponse(
                     responseCode = "400",
                     description = "Invalid information specified."
             )
     })
-//    @Timed(name="sellers_create_timer")
-//    @Metered(name="sellers_create_meter")
-    public Response createSeller(
-            @RequestBody(description = "Seller item", required = true, content = @Content(schema = @Schema(implementation = Seller.class)))
-            Seller item) {
+//    @Timed(name="brands_create_timer")
+//    @Metered(name="brands_create_meter")
+    public Response createBrand(
+            @RequestBody(description = "Car brand item", required = true, content = @Content(schema = @Schema(implementation = CarBrand.class)))
+            CarBrand item) {
 
         if (item.getId() != null  || item.getName() == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -212,16 +213,16 @@ public class SellersController {
     }
 
     @PUT
-    @Path("{id}")
+    @Path("{id}/identifiers")
     @Operation(
-            summary = "Update seller",
-            description = "Update the seller item using specified details."
+            summary = "Update car brand identifiers",
+            description = "Update the car brand item using specified details."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Ad item updated.",
-                    content = @Content(schema = @Schema(implementation = Seller.class))
+                    description = "Car brand item updated.",
+                    content = @Content(schema = @Schema(implementation = CarBrand.class))
             ),
             @APIResponse(
                     responseCode = "400",
@@ -229,13 +230,17 @@ public class SellersController {
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Seller with specified identifier not found."
+                    description = "Car brand with specified identifier not found."
             )
     })
 //    @Timed(name="sellers_update_timer")
 //    @Metered(name="sellers_update_meter")
-    public Response updateSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id, Seller item) {
-        item = repo.updateItem(id, item);
+    public Response updateBrandIdentifiers(@Parameter(description = "Car brand identifier.", required = true) @PathParam("id") Integer id, String identifiers) {
+        CarBrand item = repo.getItem(id);
+        if (item != null) {
+            item.setIdentifiers(identifiers);
+            item = repo.updateItem(id, item);
+        }
 
         return item != null ?
                 Response.ok(item).build() :
@@ -245,28 +250,61 @@ public class SellersController {
     @DELETE
     @Path("{id}")
     @Operation(
-            summary = "Remove seller",
-            description = "Removes the seller with specified identifier."
+            summary = "Remove car brand",
+            description = "Removes the car brand with specified identifier."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "204",
-                    description = "Seller was deleted."
+                    description = "Car brand was deleted."
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Seller with specified identifier not found."
+                    description = "Car brand with specified identifier not found."
             )
     })
 //    @Timed(name="sellers_delete_timer")
 //    @Metered(name="sellers_delete_meter")
-    public Response deleteSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id) {
-        boolean result = repo.deleteItem(id);
+    public Response deleteBrand(@Parameter(description = "Car brand identifier.", required = true) @PathParam("id") Integer id) {
+        boolean result = false;
+        CarBrand item = repo.getItem(id);
+        if (item != null && item.getModelsCount() == 0) {
+            result = repo.deleteItem(id);
+        }
 
+        if (result) {
 //        sellersCounter.dec();
+        }
 
         return result ?
                 Response.noContent().build() :
+                Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @GET
+    @Path("{id}/models")
+    @Operation(
+            summary = "Get models of specified brand",
+            description = "Find models that belong to the brand with the specified identifier."
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Resulting car models.",
+                    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = CarModel.class)),
+                    headers = {@Header(name = "X-Total-Count", schema = @Schema(type = SchemaType.INTEGER), description = "Total count of elements matching the query")}
+            ),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "Car brand with specified id does not exist."
+            )
+    })
+//    @Timed(name="sellers_get_seller_timer")
+    public Response getBrandModels(@Parameter(description = "Brand identifier.", required = true) @PathParam("id") Integer id) {
+        List<CarModel> items = modelsRepo.getModelsByBrand(id);
+
+        return items != null ?
+                Response.ok(items).build() :
                 Response.status(Response.Status.NOT_FOUND).build();
     }
 

@@ -7,15 +7,17 @@ public class AdConverter extends ConverterBase<AdEntity, Ad> {
     private static AdConverter instance;
 
     public Ad toDto(AdEntity entity) {
-        return new Ad(entity.getId(), entity.getTitle(), entity.getSource(), entity.getSellerId());
+        return new Ad(entity.getId(), entity.getTitle(), entity.getSource(), entity.getSellerId(), entity.getBrandId(), entity.getModelId());
     }
 
     public AdEntity toEntity(Ad item) {
         AdEntity entity = new AdEntity();
-        entity.setId(item.id());
-        entity.setTitle(item.title());
-        entity.setSource(item.source());
-        entity.setSellerId(item.sellerId());
+        entity.setId(item.getId());
+        entity.setTitle(item.getTitle());
+        entity.setSource(item.getSource());
+        entity.setSellerId(item.getSellerId());
+        entity.setBrandId(item.getBrandId());
+        entity.setModelId(item.getModelId());
 
         return entity;
     }

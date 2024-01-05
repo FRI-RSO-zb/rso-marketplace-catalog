@@ -12,10 +12,10 @@ public class SellerConverter extends ConverterBase<SellerEntity, Seller> {
 
     public SellerEntity toEntity(Seller item) {
         SellerEntity entity = new SellerEntity();
-        entity.setId(item.id());
-        entity.setName(item.name());
-        entity.setLocation(item.location());
-        entity.setContact(item.contact());
+        entity.setId(item.getId());
+        entity.setName(item.getName());
+        entity.setLocation(item.getLocation());
+        entity.setContact(item.getContact());
 
         return entity;
     }
