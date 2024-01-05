@@ -1,5 +1,10 @@
 package net.bobnar.marketplace.data.entities;
 
+import net.bobnar.marketplace.data.enums.BodyType;
+import net.bobnar.marketplace.data.enums.EngineType;
+import net.bobnar.marketplace.data.enums.StateType;
+import net.bobnar.marketplace.data.enums.TransmissionType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -25,9 +30,14 @@ public class AdEntity extends EntityBase implements Serializable {
     private int firstRegistrationYear;
     private int firstRegistrationMonth;
     private int drivenDistanceKm;
-    private String engineType;
-    private String transmissionType;
-    private String ageType;
+    @Enumerated(EnumType.ORDINAL)
+    private EngineType engineType;
+    @Enumerated(EnumType.ORDINAL)
+    private TransmissionType transmissionType;
+    @Enumerated(EnumType.ORDINAL)
+    private StateType stateType;
+    @Enumerated(EnumType.ORDINAL)
+    private BodyType bodyType;
     private String additionalNotes;
     private String otherData;
     private double price;
@@ -89,28 +99,36 @@ public class AdEntity extends EntityBase implements Serializable {
         this.drivenDistanceKm = drivenDistanceKm;
     }
 
-    public String getEngineType() {
+    public EngineType getEngineType() {
         return engineType;
     }
 
-    public void setEngineType(String engineType) {
+    public void setEngineType(EngineType engineType) {
         this.engineType = engineType;
     }
 
-    public String getTransmissionType() {
+    public TransmissionType getTransmissionType() {
         return transmissionType;
     }
 
-    public void setTransmissionType(String transmissionType) {
+    public void setTransmissionType(TransmissionType transmissionType) {
         this.transmissionType = transmissionType;
     }
 
-    public String getAgeType() {
-        return ageType;
+    public StateType getStateType() {
+        return stateType;
     }
 
-    public void setAgeType(String ageType) {
-        this.ageType = ageType;
+    public void setStateType(StateType stateType) {
+        this.stateType = stateType;
+    }
+
+    public BodyType getBodyType() {
+        return bodyType;
+    }
+
+    public void setBodyType(BodyType bodyType) {
+        this.bodyType = bodyType;
     }
 
     public String getAdditionalNotes() {

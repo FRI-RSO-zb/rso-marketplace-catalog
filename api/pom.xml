@@ -79,14 +79,28 @@
       <groupId>com.kumuluz.ee.health</groupId>
       <artifactId>kumuluzee-health</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.kumuluz.ee.metrics</groupId>
-      <artifactId>kumuluzee-metrics-core</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.kumuluz.ee.metrics</groupId>-->
+<!--      <artifactId>kumuluzee-metrics-core</artifactId>-->
+<!--    </dependency>-->
     <dependency>
       <artifactId>kumuluzee-logs-log4j2</artifactId>
       <groupId>com.kumuluz.ee.logs</groupId>
     </dependency>
+    <dependency>
+      <groupId>com.kumuluz.ee.graphql</groupId>
+      <artifactId>kumuluzee-graphql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.kumuluz.ee.graphql</groupId>
+      <artifactId>kumuluzee-graphql-ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.kumuluz.ee.grpc</groupId>
+      <artifactId>kumuluzee-grpc</artifactId>
+    </dependency>
+
+
 
     <dependency>
         <groupId>net.bobnar.marketplace.common</groupId>
@@ -96,7 +110,6 @@
       <groupId>net.bobnar.marketplace</groupId>
       <artifactId>marketplace-catalog-services</artifactId>
     </dependency>
-
 
 
     <!--    CORS does not work properly in this setup!   -->
@@ -124,6 +137,14 @@
 
   <build>
     <finalName>${project.artifactId}</finalName>
+
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.5.0.Final</version>
+      </extension>
+    </extensions>
 
     <plugins>
       <plugin>

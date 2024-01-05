@@ -6,6 +6,8 @@
         <class>net.bobnar.marketplace.data.entities.EntityBase</class>
         <class>net.bobnar.marketplace.data.entities.AdEntity</class>
         <class>net.bobnar.marketplace.data.entities.SellerEntity</class>
+        <class>net.bobnar.marketplace.data.entities.CarBrandEntity</class>
+        <class>net.bobnar.marketplace.data.entities.CarModelEntity</class>
 
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>

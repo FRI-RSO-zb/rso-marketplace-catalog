@@ -4,11 +4,11 @@ import com.kumuluz.ee.logs.cdi.Log;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import net.bobnar.marketplace.catalog.services.repositories.AdsRepository;
 import net.bobnar.marketplace.common.dtos.catalog.v1.ads.Ad;
-import org.eclipse.microprofile.metrics.ConcurrentGauge;
-import org.eclipse.microprofile.metrics.Meter;
-import org.eclipse.microprofile.metrics.annotation.Metered;
-import org.eclipse.microprofile.metrics.annotation.Metric;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+//import org.eclipse.microprofile.metrics.ConcurrentGauge;
+//import org.eclipse.microprofile.metrics.Meter;
+//import org.eclipse.microprofile.metrics.annotation.Metered;
+//import org.eclipse.microprofile.metrics.annotation.Metric;
+//import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -40,13 +40,13 @@ import java.util.List;
 public class AdsController {
 
 
-    @Inject
-    @Metric(name="ads_counter")
-    private ConcurrentGauge adsCounter;
-
-    @Inject
-    @Metric(name="ad_adding_meter")
-    private Meter adsAddingMeter;
+//    @Inject
+//    @Metric(name="ads_counter")
+//    private ConcurrentGauge adsCounter;
+//
+//    @Inject
+//    @Metric(name="ad_adding_meter")
+//    private Meter adsAddingMeter;
 
     @Inject
     private AdsRepository ads;
@@ -68,7 +68,7 @@ public class AdsController {
                     description = "Bad request. Malformed query."
             )
     })
-    @Timed(name="ads_get_timer")
+//    @Timed(name="ads_get_timer")
     public Response getAds(
             @QueryParam("limit")
             @Parameter(name = "limit",
@@ -120,7 +120,7 @@ public class AdsController {
                     description = "Bad request. Malformed query."
             )
     })
-    @Timed(name="ads_count_timer")
+//    @Timed(name="ads_count_timer")
     public Response getCount(
             @QueryParam("limit")
             @Parameter(name = "limit",
@@ -168,8 +168,8 @@ public class AdsController {
                     description = "Bad request. Malformed query."
             )
     })
-    @Timed(name="ads_get_ads_by_seller_timer")
-    @Metered(name="ads_get_ads_by_sellers_meter")
+//    @Timed(name="ads_get_ads_by_seller_timer")
+//    @Metered(name="ads_get_ads_by_sellers_meter")
     public Response getSellerAds(
             @Parameter(description = "Seller identifier", required = true) @PathParam("sellerId") Integer sellerId,
             @QueryParam("limit")
@@ -204,7 +204,7 @@ public class AdsController {
                     description = "Ad with specified id does not exist."
             )
     })
-    @Timed(name="ads_get_ad_timer")
+//    @Timed(name="ads_get_ad_timer")
     public Response getAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id) {
         Ad result = ads.getAd(id);
 
@@ -229,8 +229,8 @@ public class AdsController {
                     description = "Invalid information specified."
             )
     })
-    @Timed(name="ads_create_timer")
-    @Metered(name="ads_create_meter")
+//    @Timed(name="ads_create_timer")
+//    @Metered(name="ads_create_meter")
     public Response createAd(
             @RequestBody(description = "Ad item", required = true, content = @Content(schema = @Schema(implementation = Ad.class)))
             Ad item) {
@@ -240,8 +240,8 @@ public class AdsController {
         }
 
         item = ads.createAd(item);
-        this.adsAddingMeter.mark();
-        this.adsCounter.inc();
+//        this.adsAddingMeter.mark();
+//        this.adsCounter.inc();
 
         return Response.status(Response.Status.CREATED)
                 .entity(item)
@@ -269,8 +269,8 @@ public class AdsController {
                     description = "Ad with specified identifier not found."
             )
     })
-    @Timed(name="ads_update_timer")
-    @Metered(name="ads_update_meter")
+//    @Timed(name="ads_update_timer")
+//    @Metered(name="ads_update_meter")
     public Response updateAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id, Ad item) {
         item = ads.updateAd(id, item);
 
@@ -295,12 +295,12 @@ public class AdsController {
                     description = "Ad with specified identifier not found."
             )
     })
-    @Timed(name="ad_delete_timer")
-    @Metered(name="ads_delete_meter")
+//    @Timed(name="ad_delete_timer")
+//    @Metered(name="ads_delete_meter")
     public Response deleteAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id) {
         boolean result = ads.deleteAd(id);
 
-        adsCounter.dec();
+//        adsCounter.dec();
 
         return result ?
                 Response.noContent().build() :

@@ -28,8 +28,8 @@
     <marketplace-common.version>1.0.2</marketplace-common.version>
 
     <kumuluzee.version>4.1.0</kumuluzee.version>
-    <kumuluzee-rest.version>2.0.1</kumuluzee-rest.version>
-<!--    <kumuluzee-rest.version>1.5.1</kumuluzee-rest.version>-->
+<!--    <kumuluzee-rest.version>2.0.1</kumuluzee-rest.version>-->
+    <kumuluzee-rest.version>1.5.1</kumuluzee-rest.version>
     <kumuluzee-openapi-mp.version>1.4.0</kumuluzee-openapi-mp.version>
     <kumuluzee-config-mp.version>2.0.0</kumuluzee-config-mp.version>
     <kumuluzee-swagger.version>1.2.1</kumuluzee-swagger.version>
@@ -41,6 +41,8 @@
     <kumuluzee-security.version>1.2.0</kumuluzee-security.version>
     <keycloak.version>5.0.0</keycloak.version>
     <kumuluzee-cdi-weld.version>4.1.0</kumuluzee-cdi-weld.version>
+    <kumuluzee-graphql.version>1.1.0</kumuluzee-graphql.version>
+    <kumuluz-grpc.version>1.1.0</kumuluz-grpc.version>
   </properties>
 
 
@@ -176,6 +178,23 @@
         <version>${kumuluzee-logs.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.kumuluz.ee.graphql</groupId>
+        <artifactId>kumuluzee-graphql</artifactId>
+        <version>${kumuluzee-graphql.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.kumuluz.ee.graphql</groupId>
+        <artifactId>kumuluzee-graphql-ui</artifactId>
+        <version>${kumuluzee-graphql.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.kumuluz.ee.grpc</groupId>
+        <artifactId>kumuluzee-grpc</artifactId>
+        <version>${kumuluz-grpc.version}</version>
+      </dependency>
 
 <!--      <dependency>-->
 <!--        <groupId>net.bobnar.marketplace</groupId>-->

@@ -4,11 +4,11 @@ import com.kumuluz.ee.logs.cdi.Log;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import net.bobnar.marketplace.catalog.services.repositories.SellersRepository;
 import net.bobnar.marketplace.common.dtos.catalog.v1.sellers.Seller;
-import org.eclipse.microprofile.metrics.ConcurrentGauge;
-import org.eclipse.microprofile.metrics.Meter;
-import org.eclipse.microprofile.metrics.annotation.Metered;
-import org.eclipse.microprofile.metrics.annotation.Metric;
-import org.eclipse.microprofile.metrics.annotation.Timed;
+//import org.eclipse.microprofile.metrics.ConcurrentGauge;
+//import org.eclipse.microprofile.metrics.Meter;
+//import org.eclipse.microprofile.metrics.annotation.Metered;
+//import org.eclipse.microprofile.metrics.annotation.Metric;
+//import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -39,13 +39,13 @@ import java.util.List;
 @ApplicationScoped
 public class SellersController {
 
-    @Inject
-    @Metric(name="sellers_counter")
-    private ConcurrentGauge sellersCounter;
-
-    @Inject
-    @Metric(name="sellers_adding_meter")
-    private Meter sellersAddingMeter;
+//    @Inject
+//    @Metric(name="sellers_counter")
+//    private ConcurrentGauge sellersCounter;
+//
+//    @Inject
+//    @Metric(name="sellers_adding_meter")
+//    private Meter sellersAddingMeter;
 
     @Inject
     SellersRepository sellers;
@@ -68,7 +68,7 @@ public class SellersController {
                     description = "Bad request. Malformed query."
             )
     })
-    @Timed(name="sellers_get_timer")
+//    @Timed(name="sellers_get_timer")
     public Response getSellers(
             @QueryParam("limit")
             @Parameter(name = "limit",
@@ -120,7 +120,7 @@ public class SellersController {
                     description = "Bad request. Malformed query."
             )
     })
-    @Timed(name="sellers_count_timer")
+//    @Timed(name="sellers_count_timer")
     public Response getCount(
             @QueryParam("limit")
             @Parameter(name = "limit",
@@ -167,7 +167,7 @@ public class SellersController {
                     description = "Seller with specified id does not exist."
             )
     })
-    @Timed(name="sellers_get_seller_timer")
+//    @Timed(name="sellers_get_seller_timer")
     public Response getSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id) {
         Seller seller = sellers.getSeller(id);
 
@@ -192,8 +192,8 @@ public class SellersController {
                     description = "Invalid information specified."
             )
     })
-    @Timed(name="sellers_create_timer")
-    @Metered(name="sellers_create_meter")
+//    @Timed(name="sellers_create_timer")
+//    @Metered(name="sellers_create_meter")
     public Response createSeller(
             @RequestBody(description = "Seller item", required = true, content = @Content(schema = @Schema(implementation = Seller.class)))
             Seller item) {
@@ -203,8 +203,8 @@ public class SellersController {
         }
 
         item = sellers.createSeller(item);
-        this.sellersAddingMeter.mark();
-        this.sellersCounter.inc();
+//        this.sellersAddingMeter.mark();
+//        this.sellersCounter.inc();
 
         return Response.status(Response.Status.CREATED)
                 .entity(item)
@@ -232,8 +232,8 @@ public class SellersController {
                     description = "Seller with specified identifier not found."
             )
     })
-    @Timed(name="sellers_update_timer")
-    @Metered(name="sellers_update_meter")
+//    @Timed(name="sellers_update_timer")
+//    @Metered(name="sellers_update_meter")
     public Response updateSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id, Seller item) {
         item = sellers.updateSeller(id, item);
 
@@ -258,12 +258,12 @@ public class SellersController {
                     description = "Seller with specified identifier not found."
             )
     })
-    @Timed(name="sellers_delete_timer")
-    @Metered(name="sellers_delete_meter")
+//    @Timed(name="sellers_delete_timer")
+//    @Metered(name="sellers_delete_meter")
     public Response deleteSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id) {
         boolean result = sellers.deleteSeller(id);
 
-        sellersCounter.dec();
+//        sellersCounter.dec();
 
         return result ?
                 Response.noContent().build() :

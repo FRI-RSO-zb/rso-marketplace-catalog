@@ -18,6 +18,15 @@ kumuluzee:
     scan-libraries: # Related to openapi - need to scan other modules for @Schema annotations
       - marketplace-common
 
+  graphql:
+    scanning:
+      optimize: false
+    schema:
+      include-scalars: true
+      include-schema-definition: true
+      include-directives: true
+      include-introspection-types: true
+
 #  security:
 #    keycloak:
 #      enabled: false
@@ -29,11 +38,24 @@ kumuluzee:
 
   datasources:
     - jndi-name: jdbc/MarketplaceCatalogDS
-      connection-url: jdbc:postgresql://localhost:15432/marketplace_catalog_db
-      username: marketplace_catalogue_user
-      password: vbuJ8as4C4rbpS2RYmx3LocalDevelopment
+#      connection-url: jdbc:postgresql://n1.ts.bobnar.net:15432/marketplace_catalogue_db
+#      connection-url: jdbc:postgresql://localhost:15432/marketplace_catalog_db
+      connection-url: jdbc:postgresql://n2.ts.bobnar.net:15432/testing
+      username: pgadmin
+      password: 7dvJANTz2xdvfGuM7vpS
+#      username: marketplace_catalogue_user
+#      password: vbuJ8as4C4rbpS2RYmx3
+#      password: vbuJ8as4C4rbpS2RYmx3LocalDevelopment
       pool:
         max-size: 4
+  grpc:
+    server:
+      http:
+        port: 8081
+      auth:
+        public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOTgnGBISzm3pKuG8QXMVm6eEuTZx8Wqc8D9gy7vArzyE5QC/bVJNFwlz...
+        issuer: http://id.bobnar.net
+
 
   health:
     logs:
