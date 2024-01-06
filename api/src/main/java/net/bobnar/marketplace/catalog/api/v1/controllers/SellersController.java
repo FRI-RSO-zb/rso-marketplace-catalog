@@ -1,17 +1,14 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import com.kumuluz.ee.logs.cdi.Log;
-import com.kumuluz.ee.rest.beans.QueryParameters;
 import net.bobnar.marketplace.catalog.services.repositories.RepositoryBase;
 import net.bobnar.marketplace.catalog.services.repositories.SellersRepository;
-import net.bobnar.marketplace.common.dtos.catalog.v1.ads.Ad;
 import net.bobnar.marketplace.common.dtos.catalog.v1.sellers.Seller;
 //import org.eclipse.microprofile.metrics.ConcurrentGauge;
 //import org.eclipse.microprofile.metrics.Meter;
 //import org.eclipse.microprofile.metrics.annotation.Metered;
 //import org.eclipse.microprofile.metrics.annotation.Metric;
 //import org.eclipse.microprofile.metrics.annotation.Timed;
-import net.bobnar.marketplace.data.entities.AdEntity;
 import net.bobnar.marketplace.data.entities.SellerEntity;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Meter;

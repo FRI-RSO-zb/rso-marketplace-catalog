@@ -4,7 +4,6 @@ import com.kumuluz.ee.logs.cdi.Log;
 import net.bobnar.marketplace.catalog.services.repositories.CarModelsRepository;
 import net.bobnar.marketplace.catalog.services.repositories.RepositoryBase;
 import net.bobnar.marketplace.common.dtos.catalog.v1.carModels.CarModel;
-import net.bobnar.marketplace.data.entities.CarBrandEntity;
 import net.bobnar.marketplace.data.entities.CarModelEntity;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Meter;

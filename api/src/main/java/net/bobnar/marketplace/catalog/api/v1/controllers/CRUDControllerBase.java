@@ -2,6 +2,7 @@ package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import net.bobnar.marketplace.catalog.services.repositories.RepositoryBase;
+import net.bobnar.marketplace.common.controllers.ControllerBase;
 import net.bobnar.marketplace.common.dtos.ItemBase;
 import net.bobnar.marketplace.data.entities.EntityBase;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;

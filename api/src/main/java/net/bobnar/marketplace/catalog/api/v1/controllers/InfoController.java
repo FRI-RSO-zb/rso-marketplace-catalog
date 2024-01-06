@@ -1,6 +1,6 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
-import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
+import net.bobnar.marketplace.common.controllers.InfoControllerBase;
 import net.bobnar.marketplace.common.dtos.v1.info.Info;
 import net.bobnar.marketplace.common.dtos.v1.info.VersionInfo;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -23,10 +23,7 @@ import java.util.*;
 @Tag(name = "Info", description = "Deployment instance information")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class InfoController {
-
-    private static VersionInfo versionInfo;
-
+public class InfoController extends InfoControllerBase {
     @GET
     @PermitAll
     @Operation(
@@ -44,15 +41,7 @@ public class InfoController {
             )
     })
     public Response getInfo() {
-        ConfigurationUtil config = ConfigurationUtil.getInstance();
-
-        Info info = new Info(
-                config.get("kumuluzee.name").get(),
-                config.get("kumuluzee.env.name").get(),
-                config.get("kumuluzee.version").get());
-
-        return Response.ok(info)
-                .build();
+        return respondOk(getServiceInfo());
     }
 
     @GET
@@ -73,34 +62,11 @@ public class InfoController {
             )
     })
     public Response getVersion() {
-        if (versionInfo == null) {
-            initializeVersionInfo();
-        }
-
-        return Response.ok(versionInfo)
-                .build();
+        return respondOk(getVersionInfo());
     }
 
-    private void initializeVersionInfo() {
-        Properties prop = new Properties();
-        try {
-            prop.load(InfoController.class.getResourceAsStream("/META-INF/service.properties"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        String version = prop.getProperty("service.version");
-        VersionInfo info = new VersionInfo(
-                version,
-                version.split("\\.")[0],
-                version.split("\\.")[1],
-                version.split("\\.")[2].split("-")[0],
-                prop.getProperty("git.branch"),
-                prop.getProperty("git.commit.id"),
-                prop.getProperty("git.commit.id.abbrev"),
-                "true".equals(prop.getProperty("git.dirty")),
-                prop.getProperty("git.build.time"));
-
-        InfoController.versionInfo = info;
+    @Override
+    protected Properties getProperties() {
+        return this.loadResourceProperties(this.getClass(), "/META-INF/service.properties");
     }
 }
