@@ -1,8 +1,8 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
-import net.bobnar.marketplace.common.dtos.catalog.v1.info.Info;
-import net.bobnar.marketplace.common.dtos.catalog.v1.info.VersionInfo;
+import net.bobnar.marketplace.common.dtos.v1.info.Info;
+import net.bobnar.marketplace.common.dtos.v1.info.VersionInfo;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;

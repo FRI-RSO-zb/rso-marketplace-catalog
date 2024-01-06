@@ -2,7 +2,6 @@ package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import net.bobnar.marketplace.catalog.services.config.ServiceConfig;
 import net.bobnar.marketplace.catalog.services.utils.DatabaseHelper;
-import net.bobnar.marketplace.common.dtos.catalog.v1.info.VersionInfo;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -27,8 +26,6 @@ public class DebugController {
 
     @Inject
     private DatabaseHelper dbHelper;
-
-    private static VersionInfo versionInfo;
 
     @POST
     @Path("break")
