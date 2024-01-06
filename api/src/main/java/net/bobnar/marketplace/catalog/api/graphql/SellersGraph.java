@@ -24,7 +24,7 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class SellersGraph {
     @Inject
-    private SellersRepository repo;
+    private SellersRepository sellersRepo;
     @Inject
     AdsRepository adsRepo;
 
@@ -33,7 +33,7 @@ public class SellersGraph {
                                                 @GraphQLArgument(name = "sort") Sort sort,
                                                 @GraphQLArgument(name = "filter") Filter filter,
                                                 @GraphQLEnvironment ResolutionEnvironment resolutionEnvironment) {
-        return GraphQLUtils.process(repo.findItems(new QueryParameters()), pagination, sort, filter);
+        return GraphQLUtils.process(sellersRepo.findItems(new QueryParameters()), pagination, sort, filter);
     }
 
     @GraphQLQuery
@@ -42,12 +42,12 @@ public class SellersGraph {
                                                 @GraphQLArgument(name = "sort") Sort sort,
                                                 @GraphQLArgument(name = "filter") Filter filter,
                                                 @GraphQLEnvironment ResolutionEnvironment resolutionEnvironment) {
-        return GraphQLUtils.process(adsRepo.getAdsFromSeller(seller.getId()), pagination, sort, filter);
+        return GraphQLUtils.process(adsRepo.toDtoList(adsRepo.getAdsFromSeller(seller.getId())), pagination, sort, filter);
     }
 
     @GraphQLQuery
     public Seller getSeller(@GraphQLArgument(name = "id") Integer id) {
-        return repo.getItem(id);
+        return sellersRepo.getItem(id);
     }
 
 }

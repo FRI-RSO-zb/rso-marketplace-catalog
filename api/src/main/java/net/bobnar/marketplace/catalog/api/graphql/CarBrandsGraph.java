@@ -15,11 +15,9 @@ import io.leangen.graphql.execution.ResolutionEnvironment;
 import net.bobnar.marketplace.catalog.services.repositories.AdsRepository;
 import net.bobnar.marketplace.catalog.services.repositories.CarBrandsRepository;
 import net.bobnar.marketplace.catalog.services.repositories.CarModelsRepository;
-import net.bobnar.marketplace.catalog.services.repositories.SellersRepository;
 import net.bobnar.marketplace.common.dtos.catalog.v1.ads.Ad;
 import net.bobnar.marketplace.common.dtos.catalog.v1.carBrands.CarBrand;
 import net.bobnar.marketplace.common.dtos.catalog.v1.carModels.CarModel;
-import net.bobnar.marketplace.common.dtos.catalog.v1.sellers.Seller;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -28,7 +26,7 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class CarBrandsGraph {
     @Inject
-    CarBrandsRepository repo;
+    CarBrandsRepository brandsRepo;
     @Inject
     AdsRepository adsRepo;
     @Inject
@@ -39,7 +37,7 @@ public class CarBrandsGraph {
                                                  @GraphQLArgument(name = "sort") Sort sort,
                                                  @GraphQLArgument(name = "filter") Filter filter,
                                                  @GraphQLEnvironment ResolutionEnvironment resolutionEnvironment) {
-        return GraphQLUtils.process(repo.findItems(new QueryParameters()), pagination, sort, filter);
+        return GraphQLUtils.process(brandsRepo.findItems(new QueryParameters()), pagination, sort, filter);
     }
 
     @GraphQLQuery
@@ -48,7 +46,7 @@ public class CarBrandsGraph {
                                                  @GraphQLArgument(name = "sort") Sort sort,
                                                  @GraphQLArgument(name = "filter") Filter filter,
                                                  @GraphQLEnvironment ResolutionEnvironment resolutionEnvironment) {
-        return GraphQLUtils.process(modelsRepo.getModelsByBrand(brand.getId()), pagination, sort, filter);
+        return GraphQLUtils.process(modelsRepo.toDtoList(modelsRepo.getModelsByBrand(brand.getId())), pagination, sort, filter);
     }
 
     @GraphQLQuery
@@ -57,12 +55,12 @@ public class CarBrandsGraph {
                                         @GraphQLArgument(name = "sort") Sort sort,
                                         @GraphQLArgument(name = "filter") Filter filter,
                                         @GraphQLEnvironment ResolutionEnvironment resolutionEnvironment) {
-        return GraphQLUtils.process(adsRepo.getAdsByBrand(brand.getId()), pagination, sort, filter);
+        return GraphQLUtils.process(adsRepo.toDtoList(adsRepo.getAdsByBrand(brand.getId())), pagination, sort, filter);
     }
 
     @GraphQLQuery
     public CarBrand getBrand(@GraphQLArgument(name = "id") Integer id) {
-        return repo.getItem(id);
+        return brandsRepo.getItem(id);
     }
 
 }

@@ -1,8 +1,6 @@
 package net.bobnar.marketplace.data.converters;
 
-import net.bobnar.marketplace.common.dtos.catalog.v1.carBrands.CarBrand;
 import net.bobnar.marketplace.common.dtos.catalog.v1.carModels.CarModel;
-import net.bobnar.marketplace.data.entities.CarBrandEntity;
 import net.bobnar.marketplace.data.entities.CarModelEntity;
 
 public class CarModelConverter extends ConverterBase<CarModelEntity, CarModel> {

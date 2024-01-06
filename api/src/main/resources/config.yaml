@@ -57,9 +57,9 @@ kumuluzee:
     server:
       http:
         port: 8081
-      auth:
-        public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOTgnGBISzm3pKuG8QXMVm6eEuTZx8Wqc8D9gy7vArzyE5QC/bVJNFwlz...
-        issuer: http://id.bobnar.net
+#      auth:
+#        public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOTgnGBISzm3pKuG8QXMVm6eEuTZx8Wqc8D9gy7vArzyE5QC/bVJNFwlz...
+#        issuer: http://id.bobnar.net
 
 
   health:

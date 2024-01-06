@@ -59,15 +59,6 @@ public class AdsGraph {
     }
 
     @GraphQLQuery
-    public CarBrand getBrand(@GraphQLContext Ad ad) {
-        if (ad.getBrandId() == null) {
-            return null;
-        }
-
-        return brandsRepo.getItem(ad.getBrandId());
-    }
-
-    @GraphQLQuery
     public CarModel getModel(@GraphQLContext Ad ad) {
         if (ad.getModelId() == null) {
             return null;
@@ -83,7 +74,7 @@ public class AdsGraph {
 
     @GraphQLMutation
     public Boolean deleteAd(@GraphQLArgument(name="id") Integer id) {
-        return repo.deleteItem(id);
+        return repo.delete(id);
     }
 
 }

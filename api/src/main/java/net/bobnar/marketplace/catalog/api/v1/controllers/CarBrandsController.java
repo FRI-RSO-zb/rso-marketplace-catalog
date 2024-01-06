@@ -1,12 +1,17 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import com.kumuluz.ee.logs.cdi.Log;
-import com.kumuluz.ee.rest.beans.QueryParameters;
 import net.bobnar.marketplace.catalog.services.repositories.CarBrandsRepository;
 import net.bobnar.marketplace.catalog.services.repositories.CarModelsRepository;
+import net.bobnar.marketplace.catalog.services.repositories.RepositoryBase;
 import net.bobnar.marketplace.common.dtos.catalog.v1.carBrands.CarBrand;
 import net.bobnar.marketplace.common.dtos.catalog.v1.carModels.CarModel;
-import net.bobnar.marketplace.common.dtos.catalog.v1.sellers.Seller;
+import net.bobnar.marketplace.data.entities.CarBrandEntity;
+import org.eclipse.microprofile.metrics.ConcurrentGauge;
+import org.eclipse.microprofile.metrics.Meter;
+import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.annotation.Metric;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -35,18 +40,17 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
-public class CarBrandsController {
-
-//    @Inject
-//    @Metric(name="sellers_counter")
-//    private ConcurrentGauge itemsCounter;
-//
-//    @Inject
-//    @Metric(name="sellers_adding_meter")
-//    private Meter itemsAddingMeter;
+public class CarBrandsController extends CRUDControllerBase<CarBrandEntity, CarBrand> {
+    private final String MetricsPrefix = "brands_";
+    @Inject @Metric(name=MetricsPrefix+MetricsCounterName)
+    private ConcurrentGauge itemsCounter;
+    @Inject @Metric(name=MetricsPrefix+MetricsAddingMeterName)
+    private Meter addingMeter;
+    @Inject @Metric(name=MetricsPrefix+MetricsRemovingMeterName)
+    private Meter removingMeter;
 
     @Inject
-    CarBrandsRepository repo;
+    CarBrandsRepository brandsRepo;
 
     @Inject
     CarModelsRepository modelsRepo;
@@ -69,7 +73,8 @@ public class CarBrandsController {
                     description = "Bad request. Malformed query."
             )
     })
-//    @Timed(name="brands_get_timer")
+    @Timed(name=MetricsPrefix+MetricsGetListOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsGetListOperationName+MetricsMeterSuffix)
     public Response getBrands(
             @QueryParam("limit")
             @Parameter(name = "limit",
@@ -92,16 +97,20 @@ public class CarBrandsController {
                     example = "primaryIdentifier:eq:vw"
             )
             String where,
+            @QueryParam("ids")
+            @Parameter(
+                    name = "ids",
+                    in = ParameterIn.QUERY,
+                    description = "List of ids to query. Exclusive parameter that overrides all other."
+            )
+            List<Integer> ids,
             @Context UriInfo uriInfo
     ) {
-        QueryParameters query = this.getRequestQuery(uriInfo);
-        List<CarBrand> result = repo.findItems(query);
-        Long allItemsCount = repo.countQueriedItems(query);
+        if (!ids.isEmpty()) {
+            return respondGetItemsByIds(ids);
+        }
 
-        return Response
-                .ok(result)
-                .header("X-Total-Count", allItemsCount)
-                .build();
+        return respondGetQueryItemsResponse(limit, offset, where, uriInfo);
     }
 
     @GET
@@ -114,78 +123,28 @@ public class CarBrandsController {
             @APIResponse(
                     responseCode = "200",
                     description = "Resulting car brand item.",
-                    content = @Content(schema = @Schema(implementation = Seller.class))
+                    content = @Content(schema = @Schema(implementation = CarBrand.class))
             ),
             @APIResponse(
                     responseCode = "404",
                     description = "Car brand with specified id does not exist."
             )
     })
-//    @Timed(name="sellers_get_seller_timer")
+    @Timed(name=MetricsPrefix+MetricsGetItemOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsGetItemOperationName+MetricsMeterSuffix)
     public Response getBrand(@Parameter(description = "Car brand identifier.", required = true) @PathParam("id") Integer id) {
-        CarBrand item = repo.getItem(id);
-
-        return item != null ?
-                Response.ok(item).build() :
-                Response.status(Response.Status.NOT_FOUND).build();
-    }
-
-    @GET
-    @Path("count")
-    @Operation(
-            summary = "Get count of car brands that match specified filter",
-            description = "Filter the list of all car brands and return the total count of all items."
-    )
-    @APIResponses({
-            @APIResponse(
-                    responseCode = "200",
-                    description = "Number of items.",
-                    content = @Content(schema = @Schema(type = SchemaType.INTEGER))
-            ),
-            @APIResponse(
-                    responseCode = "403",
-                    description = "Bad request. Malformed query."
-            )
-    })
-//    @Timed(name="brands_count_timer")
-    public Response getCount(
-            @QueryParam("limit")
-            @Parameter(name = "limit",
-                    description = "Limit the number of returned results",
-                    in = ParameterIn.QUERY,
-                    example = "10")
-            Integer limit,
-            @QueryParam("offset")
-            @Parameter(
-                    name = "offset",
-                    in = ParameterIn.QUERY,
-                    description = "Offset for filtering and pagination"
-            )
-            Integer offset,
-            @QueryParam("where")
-            @Parameter(
-                    name = "where",
-                    in = ParameterIn.QUERY,
-                    description = "Where filter",
-                    example = "primaryIdentifier:eq:vw"
-            )
-            String where,
-            @Context UriInfo uriInfo
-    ) {
-        Long count = repo.countQueriedItems(this.getRequestQuery(uriInfo));
-
-        return Response.ok(count).build();
+        return respondGetItemById(id);
     }
 
     @POST
     @Operation(
-            summary = "Create car brand",
-            description = "Creates the car brand item using specified details."
+            summary = "Create car brands",
+            description = "Creates the car brands using specified details."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
-                    description = "Car brand item created.",
+                    description = "Car brand items created.",
                     content = @Content(schema = @Schema(implementation = CarBrand.class))
             ),
             @APIResponse(
@@ -193,29 +152,24 @@ public class CarBrandsController {
                     description = "Invalid information specified."
             )
     })
-//    @Timed(name="brands_create_timer")
-//    @Metered(name="brands_create_meter")
-    public Response createBrand(
-            @RequestBody(description = "Car brand item", required = true, content = @Content(schema = @Schema(implementation = CarBrand.class)))
-            CarBrand item) {
-
-        if (item.getId() != null  || item.getName() == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+    @Timed(name=MetricsPrefix+MetricsCreateItemsOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsCreateItemsOperationName+MetricsMeterSuffix)
+    public Response createBrands(
+            @RequestBody(description = "Car brand items", required = true, content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = CarBrand.class)))
+            List<CarBrand> items) {
+        for (CarBrand item : items) {
+            if (item.getName() == null) {
+                return respondBadRequestWithError("Missing item name");
+            }
         }
 
-        item = repo.createItem(item);
-//        this.sellersAddingMeter.mark();
-//        this.sellersCounter.inc();
-
-        return Response.status(Response.Status.CREATED)
-                .entity(item)
-                .build();
+        return respondCreateItems(items);
     }
 
     @PUT
-    @Path("{id}/identifiers")
+    @Path("{id}")
     @Operation(
-            summary = "Update car brand identifiers",
+            summary = "Update car brand",
             description = "Update the car brand item using specified details."
     )
     @APIResponses({
@@ -233,18 +187,10 @@ public class CarBrandsController {
                     description = "Car brand with specified identifier not found."
             )
     })
-//    @Timed(name="sellers_update_timer")
-//    @Metered(name="sellers_update_meter")
-    public Response updateBrandIdentifiers(@Parameter(description = "Car brand identifier.", required = true) @PathParam("id") Integer id, String identifiers) {
-        CarBrand item = repo.getItem(id);
-        if (item != null) {
-            item.setIdentifiers(identifiers);
-            item = repo.updateItem(id, item);
-        }
-
-        return item != null ?
-                Response.ok(item).build() :
-                Response.status(Response.Status.NOT_FOUND).build();
+    @Timed(name=MetricsPrefix+MetricsUpdateItemOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsUpdateItemOperationName+MetricsMeterSuffix)
+    public Response updateBrand(@Parameter(description = "Car brand identifier.", required = true) @PathParam("id") Integer id, CarBrand item) {
+        return respondUpdateItem(id, item);
     }
 
     @DELETE
@@ -263,22 +209,17 @@ public class CarBrandsController {
                     description = "Car brand with specified identifier not found."
             )
     })
-//    @Timed(name="sellers_delete_timer")
-//    @Metered(name="sellers_delete_meter")
+    @Timed(name=MetricsPrefix+MetricsDeleteItemOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsDeleteItemOperationName+MetricsMeterSuffix)
     public Response deleteBrand(@Parameter(description = "Car brand identifier.", required = true) @PathParam("id") Integer id) {
-        boolean result = false;
-        CarBrand item = repo.getItem(id);
-        if (item != null && item.getModelsCount() == 0) {
-            result = repo.deleteItem(id);
+        CarBrandEntity entity = getMainRepository().get(id);
+        if (entity != null) {
+            if (!entity.getModels().isEmpty()) {
+                return respondBadRequestWithError("Car brand contains models");
+            }
         }
 
-        if (result) {
-//        sellersCounter.dec();
-        }
-
-        return result ?
-                Response.noContent().build() :
-                Response.status(Response.Status.NOT_FOUND).build();
+        return respondDeleteItemById(id);
     }
 
     @GET
@@ -299,20 +240,31 @@ public class CarBrandsController {
                     description = "Car brand with specified id does not exist."
             )
     })
-//    @Timed(name="sellers_get_seller_timer")
+    @Timed(name=MetricsPrefix+MetricsGetItemOperationName+"_models"+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsGetItemOperationName+"_models"+MetricsMeterSuffix)
     public Response getBrandModels(@Parameter(description = "Brand identifier.", required = true) @PathParam("id") Integer id) {
-        List<CarModel> items = modelsRepo.getModelsByBrand(id);
+        List<CarModel> items = modelsRepo.toDtoList(modelsRepo.getModelsByBrand(id));
 
-        return items != null ?
-                Response.ok(items).build() :
-                Response.status(Response.Status.NOT_FOUND).build();
+        return respondWithAnyItemList(items, items.size());
     }
 
-    private QueryParameters getRequestQuery(UriInfo uriInfo) {
-        return QueryParameters.query(uriInfo.getRequestUri().getQuery())
-                .maxLimit(50)
-                .defaultLimit(10)
-                .defaultOffset(0)
-                .build();
+    @Override
+    protected RepositoryBase<CarBrandEntity, CarBrand> getMainRepository() {
+        return brandsRepo;
+    }
+
+    @Override
+    protected Meter getMetricsAddingMeter() {
+        return addingMeter;
+    }
+
+    @Override
+    protected Meter getMetricsRemovingMeter() {
+        return removingMeter;
+    }
+
+    @Override
+    protected ConcurrentGauge getMetricsItemsCounterGauge() {
+        return itemsCounter;
     }
 }

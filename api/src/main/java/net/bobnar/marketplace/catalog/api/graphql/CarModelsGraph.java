@@ -51,7 +51,7 @@ public class CarModelsGraph {
                                         @GraphQLArgument(name = "sort") Sort sort,
                                         @GraphQLArgument(name = "filter") Filter filter,
                                         @GraphQLEnvironment ResolutionEnvironment resolutionEnvironment) {
-        return GraphQLUtils.process(adsRepo.getAdsByModel(model.getId()), pagination, sort, filter);
+        return GraphQLUtils.process(adsRepo.toDtoList(adsRepo.getAdsByModel(model.getId())), pagination, sort, filter);
     }
 
     @GraphQLQuery

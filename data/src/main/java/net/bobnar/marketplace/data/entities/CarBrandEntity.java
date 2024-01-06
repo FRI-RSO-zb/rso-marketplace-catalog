@@ -9,14 +9,13 @@ import java.util.List;
 @Entity
 @Table(name="CarBrands", indexes = { @Index(columnList = "primaryIdentifier") })
 @NamedQuery(name="CarBrands.findAll", query="SELECT e FROM CarBrandEntity e")
+@NamedQuery(name="CarBrands.findByPrimaryIdentifier", query="SELECT e FROM CarBrandEntity e WHERE e.primaryIdentifier=:primaryIdentifier")
 public class CarBrandEntity extends EntityBase<CarBrand> {
     private String name;
     private String primaryIdentifier;
     private String identifiers;
     @OneToMany(mappedBy = "brand")
     private List<CarModelEntity> models;
-    @OneToMany(mappedBy = "brand")
-    private List<AdEntity> ads;
 
     public List<CarModelEntity> getModels() {
         return models;
@@ -24,14 +23,6 @@ public class CarBrandEntity extends EntityBase<CarBrand> {
 
     public void setModels(List<CarModelEntity> models) {
         this.models = models;
-    }
-
-    public List<AdEntity> getAds() {
-        return ads;
-    }
-
-    public void setAds(List<AdEntity> ads) {
-        this.ads = ads;
     }
 
     public String getName() {

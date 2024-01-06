@@ -13,6 +13,7 @@ import java.util.List;
         name="CarModels.findByBrandId",
         query="SELECT e FROM CarModelEntity e WHERE e.brandId=:brandId"
 )
+@NamedQuery(name="CarModels.findByPrimaryIdentifier", query="SELECT e FROM CarModelEntity e WHERE e.primaryIdentifier=:primaryIdentifier AND e.brandId=:brandId")
 public class CarModelEntity extends EntityBase<CarModel> {
     private String name;
 

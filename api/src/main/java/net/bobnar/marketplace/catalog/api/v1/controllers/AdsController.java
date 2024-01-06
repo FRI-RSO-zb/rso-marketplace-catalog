@@ -1,19 +1,21 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import com.kumuluz.ee.logs.cdi.Log;
-import com.kumuluz.ee.rest.beans.QueryParameters;
 import net.bobnar.marketplace.catalog.services.repositories.AdsRepository;
+import net.bobnar.marketplace.catalog.services.repositories.RepositoryBase;
 import net.bobnar.marketplace.common.dtos.catalog.v1.ads.Ad;
-//import org.eclipse.microprofile.metrics.ConcurrentGauge;
-//import org.eclipse.microprofile.metrics.Meter;
-//import org.eclipse.microprofile.metrics.annotation.Metered;
-//import org.eclipse.microprofile.metrics.annotation.Metric;
-//import org.eclipse.microprofile.metrics.annotation.Timed;
+import net.bobnar.marketplace.data.entities.AdEntity;
+import org.eclipse.microprofile.metrics.ConcurrentGauge;
+import org.eclipse.microprofile.metrics.Meter;
+import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.annotation.Metric;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -30,26 +32,23 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
 
-
 @Log
 @Path("ads")
 @Tag(name="Ads", description = "Endpoints for managing ad items.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
-public class AdsController {
-
-
-//    @Inject
-//    @Metric(name="ads_counter")
-//    private ConcurrentGauge adsCounter;
-//
-//    @Inject
-//    @Metric(name="ad_adding_meter")
-//    private Meter adsAddingMeter;
+public class AdsController extends CRUDControllerBase<AdEntity, Ad> {
+    private final String MetricsPrefix = "ads_";
+    @Inject @Metric(name=MetricsPrefix+MetricsCounterName)
+    private ConcurrentGauge itemsCounter;
+    @Inject @Metric(name=MetricsPrefix+MetricsAddingMeterName)
+    private Meter addingMeter;
+    @Inject @Metric(name=MetricsPrefix+MetricsRemovingMeterName)
+    private Meter removingMeter;
 
     @Inject
-    private AdsRepository repo;
+    private AdsRepository adsRepo;
 
     @GET
     @Operation(
@@ -68,7 +67,8 @@ public class AdsController {
                     description = "Bad request. Malformed query."
             )
     })
-//    @Timed(name="ads_get_timer")
+    @Timed(name=MetricsPrefix+MetricsGetListOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsGetListOperationName+MetricsMeterSuffix)
     public Response getAds(
             @QueryParam("limit")
             @Parameter(name = "limit",
@@ -88,66 +88,47 @@ public class AdsController {
                     name = "where",
                     in = ParameterIn.QUERY,
                     description = "Where filter",
-                    example = "sellerId:eq:1"
+                    examples = { @ExampleObject(name="Empty", value=""), @ExampleObject(name="Filter by seller", value="sellerId:eq:1") }
             )
             String where,
+            @QueryParam("ids")
+            @Parameter(
+                    name = "ids",
+                    in = ParameterIn.QUERY,
+                    description = "List of ids to query. Exclusive parameter that overrides all other."
+            )
+            List<Integer> ids,
+            @QueryParam("sourceIds")
+            @Parameter(
+                    name = "sourceIds",
+                    in = ParameterIn.QUERY,
+                    description = "List of source ad ids to query. Exclusive parameter that overrides all other, except sources."
+            )
+            List<String> sourceIds,
+            @QueryParam("sources")
+            @Parameter(
+                    name = "sources",
+                    in = ParameterIn.QUERY,
+                    description = "List of ads with correct source to query. Exclusive parameter that must be used in combination with sourceIds",
+                    examples = { @ExampleObject(name="Empty", value=""), @ExampleObject(name="Avtonet", value="avtonet"), @ExampleObject(name="Doberavto", value="doberavto") }
+            )
+            List<String> sources,
             @Context UriInfo uriInfo
     ) {
-        QueryParameters query = this.getRequestQuery(uriInfo);
-        List<Ad> result = repo.findItems(query);
-        Long allItemsCount = repo.countQueriedItems(query);
+        if (!ids.isEmpty()) {
+            return respondGetItemsByIds(ids);
+        }
 
-        return Response
-                .ok(result)
-                .header("X-Total-Count", allItemsCount)
-                .build();
-    }
+        if (!sourceIds.isEmpty()) {
+            List<Ad> results = adsRepo.toDtoList(adsRepo.getAdsBySourceIds(sourceIds).stream().filter(e -> sources.contains(e.getSource())));
+            return respondWithItemList(results, results.size());
+        }
 
-    @GET
-    @Path("count")
-    @Operation(
-            summary = "Get count of ads that match specified filter",
-            description = "Filter the list of all ads and return the total count of all items."
-    )
-    @APIResponses({
-            @APIResponse(
-                    responseCode = "200",
-                    description = "Number of items.",
-                    content = @Content(schema = @Schema(type = SchemaType.INTEGER))
-            ),
-            @APIResponse(
-                    responseCode = "403",
-                    description = "Bad request. Malformed query."
-            )
-    })
-//    @Timed(name="ads_count_timer")
-    public Response getCount(
-            @QueryParam("limit")
-            @Parameter(name = "limit",
-                    description = "Limit the number of returned results",
-                    in = ParameterIn.QUERY,
-                    example = "10")
-            Integer limit,
-            @QueryParam("offset")
-            @Parameter(
-                    name = "offset",
-                    in = ParameterIn.QUERY,
-                    description = "Offset for filtering and pagination"
-            )
-            Integer offset,
-            @QueryParam("where")
-            @Parameter(
-                    name = "where",
-                    in = ParameterIn.QUERY,
-                    description = "Where filter",
-                    example = "sellerId:eq:1"
-            )
-            String where,
-            @Context UriInfo uriInfo
-    ) {
-        Long count = repo.countQueriedItems(this.getRequestQuery(uriInfo));
+        if (!sources.isEmpty()) {
+            return respondBadRequestWithError("Sources is set, but source ids is empty.");
+        }
 
-        return Response.ok(count).build();
+        return respondGetQueryItemsResponse(limit, offset, where, uriInfo);
     }
 
     @GET
@@ -168,8 +149,8 @@ public class AdsController {
                     description = "Bad request. Malformed query."
             )
     })
-//    @Timed(name="ads_get_ads_by_seller_timer")
-//    @Metered(name="ads_get_ads_by_sellers_meter")
+    @Timed(name=MetricsPrefix+MetricsGetListOperationName+"_by_seller"+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsGetListOperationName+"_by_seller"+MetricsMeterSuffix)
     public Response getSellerAds(
             @Parameter(description = "Seller identifier", required = true) @PathParam("sellerId") Integer sellerId,
             @QueryParam("limit")
@@ -179,12 +160,9 @@ public class AdsController {
                     example = "10")
             Integer limit
     ) {
-        var result = repo.getAdsFromSeller(sellerId);
+        List<AdEntity> result = adsRepo.getAdsFromSeller(sellerId);
 
-        return Response
-                .ok(result)
-                .header("X-Total-Count", result.size())
-                .build();
+        return respondWithItemList(adsRepo.toDtoList(result), result.size());
     }
 
     @GET
@@ -204,48 +182,44 @@ public class AdsController {
                     description = "Ad with specified id does not exist."
             )
     })
-//    @Timed(name="ads_get_ad_timer")
+    @Timed(name=MetricsPrefix+MetricsGetItemOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsGetItemOperationName+MetricsMeterSuffix)
     public Response getAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id) {
-        Ad result = repo.getItem(id);
-
-        return result != null ?
-                Response.ok(result).build() :
-                Response.status(Response.Status.NOT_FOUND).build();
+        return respondGetItemById(id);
     }
 
     @POST
     @Operation(
-            summary = "Create ad",
-            description = "Creates the ad item using specified details."
+            summary = "Create ads",
+            description = "Creates the ads items using specified details."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
-                    description = "Ad item created.",
-                    content = @Content(schema = @Schema(implementation = Ad.class))
+                    description = "Ad items created.",
+                    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Ad.class))
             ),
             @APIResponse(
                     responseCode = "400",
                     description = "Invalid information specified."
             )
     })
-//    @Timed(name="ads_create_timer")
-//    @Metered(name="ads_create_meter")
-    public Response createAd(
-            @RequestBody(description = "Ad item", required = true, content = @Content(schema = @Schema(implementation = Ad.class)))
-            Ad item) {
-
-        if (item.getId() != null  || item.getTitle() == null || item.getSource() == null || item.getSellerId() == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+    @Timed(name=MetricsPrefix+MetricsCreateItemsOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsCreateItemsOperationName+MetricsMeterSuffix)
+    public Response createAds(
+            @RequestBody(description = "Ad items", required = true, content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Ad.class)))
+            List<Ad> items) {
+        for (Ad item : items) {
+            if (item.getTitle() == null) {
+                return respondBadRequestWithError("Missing item title");
+            } else if (item.getSource() == null) {
+                return respondBadRequestWithError("Missing item source");
+//            } else if (item.getSellerId() == null) {
+//                return respondBadRequestWithError("Missing item seller id");
+            }
         }
 
-        item = repo.createItem(item);
-//        this.adsAddingMeter.mark();
-//        this.adsCounter.inc();
-
-        return Response.status(Response.Status.CREATED)
-                .entity(item)
-                .build();
+        return respondCreateItems(items);
     }
 
     @PUT
@@ -269,14 +243,10 @@ public class AdsController {
                     description = "Ad with specified identifier not found."
             )
     })
-//    @Timed(name="ads_update_timer")
-//    @Metered(name="ads_update_meter")
+    @Timed(name=MetricsPrefix+MetricsUpdateItemOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsUpdateItemOperationName+MetricsMeterSuffix)
     public Response updateAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id, Ad item) {
-        item = repo.updateItem(id, item);
-
-        return item != null ?
-                Response.ok(item).build() :
-                Response.status(Response.Status.NOT_FOUND).build();
+        return respondUpdateItem(id, item);
     }
 
     @DELETE
@@ -295,23 +265,29 @@ public class AdsController {
                     description = "Ad with specified identifier not found."
             )
     })
-//    @Timed(name="ad_delete_timer")
-//    @Metered(name="ads_delete_meter")
+    @Timed(name=MetricsPrefix+MetricsDeleteItemOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsDeleteItemOperationName+MetricsMeterSuffix)
     public Response deleteAd(@Parameter(description = "Ad identifier.", required = true) @PathParam("id") Integer id) {
-        boolean result = repo.deleteItem(id);
-
-//        adsCounter.dec();
-
-        return result ?
-                Response.noContent().build() :
-                Response.status(Response.Status.NOT_FOUND).build();
+        return respondDeleteItemById(id);
     }
 
-    private QueryParameters getRequestQuery(UriInfo uriInfo) {
-        return QueryParameters.query(uriInfo.getRequestUri().getQuery())
-                .maxLimit(50)
-                .defaultLimit(10)
-                .defaultOffset(0)
-                .build();
+    @Override
+    protected RepositoryBase<AdEntity, Ad> getMainRepository() {
+        return adsRepo;
+    }
+
+    @Override
+    protected Meter getMetricsAddingMeter() {
+        return addingMeter;
+    }
+
+    @Override
+    protected Meter getMetricsRemovingMeter() {
+        return removingMeter;
+    }
+
+    @Override
+    protected ConcurrentGauge getMetricsItemsCounterGauge() {
+        return itemsCounter;
     }
 }

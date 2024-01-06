@@ -1,18 +1,11 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import com.kumuluz.ee.logs.cdi.Log;
-import com.kumuluz.ee.rest.beans.QueryParameters;
+import net.bobnar.marketplace.catalog.services.repositories.CarModelsRepository;
 import net.bobnar.marketplace.catalog.services.repositories.RepositoryBase;
-import net.bobnar.marketplace.catalog.services.repositories.SellersRepository;
-import net.bobnar.marketplace.common.dtos.catalog.v1.ads.Ad;
-import net.bobnar.marketplace.common.dtos.catalog.v1.sellers.Seller;
-//import org.eclipse.microprofile.metrics.ConcurrentGauge;
-//import org.eclipse.microprofile.metrics.Meter;
-//import org.eclipse.microprofile.metrics.annotation.Metered;
-//import org.eclipse.microprofile.metrics.annotation.Metric;
-//import org.eclipse.microprofile.metrics.annotation.Timed;
-import net.bobnar.marketplace.data.entities.AdEntity;
-import net.bobnar.marketplace.data.entities.SellerEntity;
+import net.bobnar.marketplace.common.dtos.catalog.v1.carModels.CarModel;
+import net.bobnar.marketplace.data.entities.CarBrandEntity;
+import net.bobnar.marketplace.data.entities.CarModelEntity;
 import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.annotation.Metered;
@@ -23,7 +16,6 @@ import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -42,13 +34,13 @@ import java.util.List;
 
 
 @Log
-@Path("sellers")
-@Tag(name="Sellers", description = "Endpoints for managing sellers.")
+@Path("models")
+@Tag(name="Car Models", description = "Endpoints for managing car models.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
-public class SellersController extends CRUDControllerBase<SellerEntity, Seller> {
-    private final String MetricsPrefix = "sellers_";
+public class CarModelsController extends CRUDControllerBase<CarModelEntity, CarModel> {
+    private final String MetricsPrefix = "models_";
     @Inject @Metric(name=MetricsPrefix+MetricsCounterName)
     private ConcurrentGauge itemsCounter;
     @Inject @Metric(name=MetricsPrefix+MetricsAddingMeterName)
@@ -57,18 +49,18 @@ public class SellersController extends CRUDControllerBase<SellerEntity, Seller> 
     private Meter removingMeter;
 
     @Inject
-    SellersRepository sellersRepo;
+    CarModelsRepository modelsRepo;
 
     @GET
     @Operation(
-            summary = "Get filtered sellers list",
-            description = "Get list of all sellers that match the specified filter."
+            summary = "Get filtered car models list",
+            description = "Get list of all car models that match the specified filter."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Resulting list of sellers.",
-                    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Seller.class)),
+                    description = "Resulting list of car models.",
+                    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = CarModel.class)),
                     headers = {@Header(name = "X-Total-Count", schema = @Schema(type = SchemaType.INTEGER), description = "Total count of elements matching the query")}
             ),
             @APIResponse(
@@ -76,9 +68,9 @@ public class SellersController extends CRUDControllerBase<SellerEntity, Seller> 
                     description = "Bad request. Malformed query."
             )
     })
-    @Timed(name=MetricsPrefix+MetricsGetListOperationName+"_by_seller"+MetricsTimerSuffix)
-    @Metered(name=MetricsPrefix+MetricsGetListOperationName+"_by_seller"+MetricsMeterSuffix)
-    public Response getSellers(
+    @Timed(name=MetricsPrefix+MetricsGetListOperationName+MetricsTimerSuffix)
+    @Metered(name=MetricsPrefix+MetricsGetListOperationName+MetricsMeterSuffix)
+    public Response getModels(
             @QueryParam("limit")
             @Parameter(name = "limit",
                     description = "Limit the number of returned results",
@@ -97,7 +89,7 @@ public class SellersController extends CRUDControllerBase<SellerEntity, Seller> 
                     name = "where",
                     in = ParameterIn.QUERY,
                     description = "Where filter",
-                    examples = { @ExampleObject(name="Empty", value=""), @ExampleObject(name="Filter by id", value="id:eq:1") }
+                    example = "primaryIdentifier:eq:golf"
             )
             String where,
             @QueryParam("ids")
@@ -119,36 +111,36 @@ public class SellersController extends CRUDControllerBase<SellerEntity, Seller> 
     @GET
     @Path("{id}")
     @Operation(
-            summary = "Get seller by id",
-            description = "Find the seller with the specified identifier."
+            summary = "Get car model by id",
+            description = "Find the car model with the specified identifier."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Resulting seller item.",
-                    content = @Content(schema = @Schema(implementation = Seller.class))
+                    description = "Resulting car model item.",
+                    content = @Content(schema = @Schema(implementation = CarModel.class))
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Seller with specified id does not exist."
+                    description = "Car model with specified id does not exist."
             )
     })
     @Timed(name=MetricsPrefix+MetricsGetItemOperationName+MetricsTimerSuffix)
     @Metered(name=MetricsPrefix+MetricsGetItemOperationName+MetricsMeterSuffix)
-    public Response getSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id) {
+    public Response getModel(@Parameter(description = "Car model identifier.", required = true) @PathParam("id") Integer id) {
         return respondGetItemById(id);
     }
 
     @POST
     @Operation(
-            summary = "Create sellers",
-            description = "Creates the seller items using specified details."
+            summary = "Create car models",
+            description = "Creates the car models using specified details."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
-                    description = "Seller item created.",
-                    content = @Content(schema = @Schema(implementation = Seller.class))
+                    description = "Car model items created.",
+                    content = @Content(schema = @Schema(implementation = CarModel.class))
             ),
             @APIResponse(
                     responseCode = "400",
@@ -157,12 +149,15 @@ public class SellersController extends CRUDControllerBase<SellerEntity, Seller> 
     })
     @Timed(name=MetricsPrefix+MetricsCreateItemsOperationName+MetricsTimerSuffix)
     @Metered(name=MetricsPrefix+MetricsCreateItemsOperationName+MetricsMeterSuffix)
-    public Response createSellers(
-            @RequestBody(description = "Seller items", required = true, content = @Content(schema = @Schema(type = SchemaType.ARRAY,implementation = Seller.class)))
-            List<Seller> items) {
-        for (Seller item : items) {
+    public Response createModels(
+            @RequestBody(description = "Car model items", required = true, content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = CarModel.class)))
+            List<CarModel> items) {
+        for (CarModel item : items) {
             if (item.getName() == null) {
                 return respondBadRequestWithError("Missing item name");
+            }
+            if (item.getBrandId() == null) {
+                return respondBadRequestWithError("Missing item brand id");
             }
         }
 
@@ -172,14 +167,14 @@ public class SellersController extends CRUDControllerBase<SellerEntity, Seller> 
     @PUT
     @Path("{id}")
     @Operation(
-            summary = "Update seller",
-            description = "Update the seller item using specified details."
+            summary = "Update car model",
+            description = "Update the car model item using specified details."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "Ad item updated.",
-                    content = @Content(schema = @Schema(implementation = Seller.class))
+                    description = "Car model item updated.",
+                    content = @Content(schema = @Schema(implementation = CarModel.class))
             ),
             @APIResponse(
                     responseCode = "400",
@@ -187,40 +182,48 @@ public class SellersController extends CRUDControllerBase<SellerEntity, Seller> 
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Seller with specified identifier not found."
+                    description = "Car model with specified identifier not found."
             )
     })
     @Timed(name=MetricsPrefix+MetricsUpdateItemOperationName+MetricsTimerSuffix)
     @Metered(name=MetricsPrefix+MetricsUpdateItemOperationName+MetricsMeterSuffix)
-    public Response updateSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id, Seller item) {
+    public Response updateModel(@Parameter(description = "Car model identifier.", required = true) @PathParam("id") Integer id, CarModel item) {
         return respondUpdateItem(id, item);
     }
 
     @DELETE
     @Path("{id}")
     @Operation(
-            summary = "Remove seller",
-            description = "Removes the seller with specified identifier."
+            summary = "Remove car model",
+            description = "Removes the car model with specified identifier."
     )
     @APIResponses({
             @APIResponse(
                     responseCode = "204",
-                    description = "Seller was deleted."
+                    description = "Car model was deleted."
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Seller with specified identifier not found."
+                    description = "Car model with specified identifier not found."
             )
     })
     @Timed(name=MetricsPrefix+MetricsDeleteItemOperationName+MetricsTimerSuffix)
     @Metered(name=MetricsPrefix+MetricsDeleteItemOperationName+MetricsMeterSuffix)
-    public Response deleteSeller(@Parameter(description = "Seller identifier.", required = true) @PathParam("id") Integer id) {
+    public Response deleteModel(@Parameter(description = "Car model identifier.", required = true) @PathParam("id") Integer id) {
+        CarModelEntity entity = getMainRepository().get(id);
+        if (entity != null) {
+//            if (!entity.get().isEmpty()) {
+                // TODO!
+//                return respondBadRequestWithError("Car model contains ads");
+//            }
+        }
+
         return respondDeleteItemById(id);
     }
 
     @Override
-    protected RepositoryBase<SellerEntity, Seller> getMainRepository() {
-        return sellersRepo;
+    protected RepositoryBase<CarModelEntity, CarModel> getMainRepository() {
+        return modelsRepo;
     }
 
     @Override

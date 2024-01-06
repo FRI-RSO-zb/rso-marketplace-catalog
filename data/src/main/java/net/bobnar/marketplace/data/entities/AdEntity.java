@@ -22,7 +22,7 @@ import java.io.Serializable;
 )
 @NamedQuery(
         name="Ads.findByBrandId",
-        query="SELECT e FROM AdEntity e WHERE e.brandId=:brandId"
+        query="SELECT e FROM AdEntity e WHERE e.model.brandId=:brandId"
 )
 @NamedQuery(
         name="Ads.findByModelId",
@@ -32,19 +32,14 @@ public class AdEntity extends EntityBase<Ad> implements Serializable {
     private String title;
     private String source;
     private String sourceId;
+    private String originalUri;
+
+    private String photoUri;
 
     @ManyToOne
     @JoinColumn(name="sellerid", insertable = false, updatable = false)
     private SellerEntity seller;
     private Integer sellerId;
-
-    private String originalUri;
-    private String photoUri;
-
-    @ManyToOne
-    @JoinColumn(name="brandid", insertable = false, updatable = false)
-    private CarBrandEntity brand;
-    private Integer brandId;
 
     @ManyToOne
     @JoinColumn(name="modelid", insertable = false, updatable = false)
@@ -71,14 +66,6 @@ public class AdEntity extends EntityBase<Ad> implements Serializable {
         return seller;
     }
 
-    public Integer getBrandId() {
-        return brandId;
-    }
-
-    public void setBrandId(Integer brandId) {
-        this.brandId = brandId;
-    }
-
     public Integer getModelId() {
         return modelId;
     }
@@ -102,14 +89,6 @@ public class AdEntity extends EntityBase<Ad> implements Serializable {
     public void setPhotoUri(String photoUri) {
         this.photoUri = photoUri;
     }
-
-    public CarBrandEntity getBrand() {
-        return brand;
-    }
-
-//    public void setBrand(CarBrandEntity brand) {
-//        this.brand = brand;
-//    }
 
     public CarModelEntity getModel() {
         return model;

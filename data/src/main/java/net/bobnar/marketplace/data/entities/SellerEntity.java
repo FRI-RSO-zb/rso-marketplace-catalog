@@ -13,6 +13,9 @@ public class SellerEntity extends EntityBase<Seller> {
     private String name;
     private String location;
     private String contact;
+    private String source;
+    private String sourceId;
+
     @OneToMany(mappedBy = "seller")
     private List<AdEntity> ads;
 
@@ -46,6 +49,22 @@ public class SellerEntity extends EntityBase<Seller> {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 
     @Override

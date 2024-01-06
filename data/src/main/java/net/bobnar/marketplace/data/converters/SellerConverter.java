@@ -7,7 +7,7 @@ public class SellerConverter extends ConverterBase<SellerEntity, Seller> {
     private static SellerConverter instance;
 
     public Seller toDto(SellerEntity entity) {
-        return new Seller(entity.getId(), entity.getName(), entity.getLocation(), entity.getContact());
+        return new Seller(entity.getId(), entity.getName(), entity.getLocation(), entity.getContact(), entity.getSource(), entity.getSourceId());
     }
 
     public SellerEntity toEntity(Seller item) {
@@ -16,6 +16,8 @@ public class SellerConverter extends ConverterBase<SellerEntity, Seller> {
         entity.setName(item.getName());
         entity.setLocation(item.getLocation());
         entity.setContact(item.getContact());
+        entity.setSource(item.getSource());
+        entity.setSourceId(item.getSourceId());
 
         return entity;
     }

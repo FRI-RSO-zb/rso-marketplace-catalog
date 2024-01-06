@@ -7,7 +7,7 @@ public class AdConverter extends ConverterBase<AdEntity, Ad> {
     private static AdConverter instance;
 
     public Ad toDto(AdEntity entity) {
-        return new Ad(entity.getId(), entity.getTitle(), entity.getSource(), entity.getSellerId(), entity.getBrandId(), entity.getModelId());
+        return new Ad(entity.getId(), entity.getTitle(), entity.getSource(), entity.getSourceId(), entity.getOriginalUri(), entity.getPhotoUri(), entity.getSellerId(), entity.getModelId(), entity.getOtherData());
     }
 
     public AdEntity toEntity(Ad item) {
@@ -15,9 +15,12 @@ public class AdConverter extends ConverterBase<AdEntity, Ad> {
         entity.setId(item.getId());
         entity.setTitle(item.getTitle());
         entity.setSource(item.getSource());
+        entity.setSourceId(item.getSourceId());
+        entity.setOriginalUri(item.getOriginalUri());
+        entity.setPhotoUri(item.getPhotoUri());
         entity.setSellerId(item.getSellerId());
-        entity.setBrandId(item.getBrandId());
         entity.setModelId(item.getModelId());
+        entity.setOtherData(item.getOtherData());
 
         return entity;
     }

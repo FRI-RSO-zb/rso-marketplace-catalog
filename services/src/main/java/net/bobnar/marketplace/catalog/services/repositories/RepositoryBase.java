@@ -3,17 +3,17 @@ package net.bobnar.marketplace.catalog.services.repositories;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
 import net.bobnar.marketplace.common.dtos.ItemBase;
-import net.bobnar.marketplace.common.dtos.catalog.v1.ads.Ad;
 import net.bobnar.marketplace.data.converters.ConverterBase;
-import net.bobnar.marketplace.data.entities.AdEntity;
 import net.bobnar.marketplace.data.entities.EntityBase;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public abstract class RepositoryBase<T extends EntityBase, TDto extends ItemBase> {
+public abstract class RepositoryBase<T extends EntityBase<TDto>, TDto extends ItemBase> {
 
     @Inject
     private EntityManager em;
@@ -36,14 +36,10 @@ public abstract class RepositoryBase<T extends EntityBase, TDto extends ItemBase
         }
     }
 
-    protected T get(Integer id) {
-        var entity = this.em.find(this.getEntityClass(), id);
+    public T get(Integer id) {
+        T entity = this.em.find(this.getEntityClass(), id);
 
         return entity;
-    }
-
-    public T getEntity(Integer id) {
-        return this.get(id);
     }
 
     public TDto getItem(Integer id) {
@@ -52,20 +48,32 @@ public abstract class RepositoryBase<T extends EntityBase, TDto extends ItemBase
         return item;
     }
 
-    protected List<T> find(QueryParameters query) {
+    public List<T> getMultiple(List<Integer> ids) {
+        TypedQuery<T> query = this.em.createQuery("SELECT e FROM " + this.getEntityClass().getName() + " e WHERE e.id in :ids", this.getEntityClass())
+                .setParameter("ids", ids);
+
+        return query.getResultList();
+    }
+
+    public List<TDto> getMultipleItems(List<Integer> ids) {
+        List<T> result = this.getMultiple(ids);
+
+        return toDtoList(result);
+    }
+
+    public List<T> find(QueryParameters query) {
+        if (query == null) {
+            query = new QueryParameters();
+        }
         List<T> entities = JPAUtils.queryEntities(this.em, this.getEntityClass(), query);
 
         return entities;
     }
 
-    public List<T> findEntities(QueryParameters query) {
-        return this.find(query);
-    }
-
     public List<TDto> findItems(QueryParameters query) {
         List<T> result = this.find(query);
 
-        return result.stream().map(this::toDto).collect(Collectors.toList());
+        return toDtoList(result);
     }
 
     protected void persistNonTransactional(T entity) {
@@ -83,18 +91,46 @@ public abstract class RepositoryBase<T extends EntityBase, TDto extends ItemBase
         }
     }
 
-    public TDto createItem(TDto item) {
-        T entity = this.toEntity(item);
+    protected void persistAll(List<T> entities) {
+        try {
+            this.beginTransaction();
+            for (T entity : entities) {
+                this.persistNonTransactional(entity);
+            }
+            this.commitTransaction();
+        } catch (Exception e) {
+            this.rollbackTransaction();
+            throw e;
+        }
+    }
+
+    public void create(T entity) {
         this.persist(entity);
 
         if (entity.getId() == null) {
-            throw new RuntimeException("Unable to save item " + item.getClass().getName());
+            throw new RuntimeException("Unable to save entity " + entity.getClass().getName());
         }
+    }
+
+    public void create(List<T> entities) {
+        this.persistAll(entities);
+    }
+
+    public TDto createItem(TDto item) {
+        T entity = this.toEntity(item);
+        this.create(entity);
 
         return this.toDto(entity);
     }
 
-    protected T update(Integer id, T updateEntity) {
+    public List<TDto> createItems(List<TDto> items) {
+        List<T> entities = this.toEntityList(items);
+        this.create(entities);
+
+        return this.toDtoList(entities);
+    }
+
+    public T update(Integer id, T updateEntity) {
         T entity = this.get(id);
         if (entity == null) {
             return null;
@@ -126,7 +162,7 @@ public abstract class RepositoryBase<T extends EntityBase, TDto extends ItemBase
         }
     }
 
-    protected boolean delete(Integer id) {
+    public boolean delete(Integer id) {
         T entity = this.get(id);
         if (entity == null) {
             return false;
@@ -144,10 +180,6 @@ public abstract class RepositoryBase<T extends EntityBase, TDto extends ItemBase
         return true;
     }
 
-    public boolean deleteItem(Integer id) {
-        return this.delete(id);
-    }
-
     public boolean deleteItem(TDto item) {
         if (item != null) {
             return this.delete(item.getId());
@@ -156,24 +188,39 @@ public abstract class RepositoryBase<T extends EntityBase, TDto extends ItemBase
         return false;
     }
 
-    protected Long countQueriedItems(QueryParameters query) {
-        return JPAUtils.queryEntitiesCount(this.em, this.getEntityClass(), query);
+    public int countQueriedItems(QueryParameters query) {
+        if (query == null) {
+            query = new QueryParameters();
+        }
+        return JPAUtils.queryEntitiesCount(this.em, this.getEntityClass(), query).intValue();
     }
 
     protected abstract Class<T> getEntityClass();
 
     protected abstract ConverterBase<T, TDto> getConverter();
 
-    protected TDto toDto(T entity) {
+    public TDto toDto(T entity) {
         return entity != null ?
                 this.getConverter().toDto(entity) :
                 null;
     }
 
-    protected T toEntity(TDto item) {
+    public List<TDto> toDtoList(List<T> entities) {
+        return toDtoList(entities.stream());
+    }
+
+    public List<TDto> toDtoList(Stream<T> entitiesStream) {
+        return entitiesStream.map(this::toDto).collect(Collectors.toList());
+    }
+
+    public T toEntity(TDto item) {
         return item != null ?
                 this.getConverter().toEntity(item) :
                 null;
+    }
+
+    public List<T> toEntityList(List<TDto> items) {
+        return items.stream().map(this::toEntity).collect(Collectors.toList());
     }
 
     public EntityManager getEntityManager() {
