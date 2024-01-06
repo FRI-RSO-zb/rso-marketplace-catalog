@@ -89,7 +89,7 @@ public class CarModelsServiceImpl extends CarModelsGrpc.CarModelsImplBase {
             CarModelEntity foundModel = null;
             List<CarModelEntity> models = modelsRepo.findByPrimaryIdentifier(request.getModelIdentifier(), foundBrand.getId());
             if (!models.isEmpty()) {
-                foundModel = models.get(1);
+                foundModel = models.get(0);
             } else {
                 String modelIdentifier = request.getModelIdentifier();
                 for (CarModelEntity model : modelsRepo.find(null)) {
