@@ -58,6 +58,7 @@ public class AdEntity extends EntityBase<Ad> implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     private BodyType bodyType;
     private String additionalNotes;
+    @Lob
     private String otherData;
     private double price;
 

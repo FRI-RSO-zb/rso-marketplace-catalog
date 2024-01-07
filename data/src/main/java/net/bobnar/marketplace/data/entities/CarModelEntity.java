@@ -9,11 +9,9 @@ import java.util.List;
 @Entity
 @Table(name="CarModels", indexes={ @Index(columnList = "primaryIdentifier") })
 @NamedQuery(name="CarModels.findAll", query="SELECT e FROM CarModelEntity e")
-@NamedQuery(
-        name="CarModels.findByBrandId",
-        query="SELECT e FROM CarModelEntity e WHERE e.brandId=:brandId"
-)
-@NamedQuery(name="CarModels.findByPrimaryIdentifier", query="SELECT e FROM CarModelEntity e WHERE e.primaryIdentifier=:primaryIdentifier AND e.brandId=:brandId")
+@NamedQuery(name="CarModels.findByBrandId", query="SELECT e FROM CarModelEntity e WHERE e.brandId=:brandId")
+@NamedQuery(name="CarModels.findByPrimaryIdentifier", query="SELECT e FROM CarModelEntity e WHERE e.brandId=:brandId AND e.primaryIdentifier=:primaryIdentifier")
+@NamedQuery(name="CarModels.findWithIdentifier", query="SELECT e FROM CarModelEntity e WHERE  e.brandId=:brandId AND e.identifiers LIKE :identifier")
 public class CarModelEntity extends EntityBase<CarModel> {
     private String name;
 

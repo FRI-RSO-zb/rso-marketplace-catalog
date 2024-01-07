@@ -3,7 +3,9 @@ package net.bobnar.marketplace.catalog.services.repositories;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import net.bobnar.marketplace.common.dtos.catalog.v1.carModels.CarModel;
 import net.bobnar.marketplace.data.converters.CarModelConverter;
+import net.bobnar.marketplace.data.entities.CarBrandEntity;
 import net.bobnar.marketplace.data.entities.CarModelEntity;
+import org.parboiled.common.Tuple2;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -14,9 +16,17 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class CarModelsRepository extends RepositoryBase<CarModelEntity, CarModel> {
 
-    public List<CarModelEntity> findByPrimaryIdentifier(String identifier, Integer brandId) {
+    public CarModelEntity findByPrimaryIdentifier(Integer brandId, String identifier) {
         TypedQuery<CarModelEntity> query = this.getEntityManager().createNamedQuery("CarModels.findByPrimaryIdentifier", CarModelEntity.class);
         query.setParameter("primaryIdentifier", identifier);
+        query.setParameter("brandId", brandId);
+
+        return queryGetSingleResultOrNull(query);
+    }
+
+    public List<CarModelEntity> findItemsWithIdentifier(Integer brandId, String identifier) {
+        TypedQuery<CarModelEntity> query = this.getEntityManager().createNamedQuery("CarModels.findWithIdentifier", CarModelEntity.class);
+        query.setParameter("identifier", "%" + identifier + "%");
         query.setParameter("brandId", brandId);
 
         return query.getResultList();

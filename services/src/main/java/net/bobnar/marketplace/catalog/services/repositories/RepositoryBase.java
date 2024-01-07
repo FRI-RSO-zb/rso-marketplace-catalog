@@ -42,6 +42,23 @@ public abstract class RepositoryBase<T extends EntityBase<TDto>, TDto extends It
         return entity;
     }
 
+    protected T queryGetSingleResultOrNull(TypedQuery<T> query) {
+        List<T> results = query.setMaxResults(1).getResultList();
+
+        if (!results.isEmpty()) {
+            return results.get(0);
+        }
+
+        return null;
+    }
+
+    public T getByColumn(String columnName, String value) {
+        TypedQuery<T> query = this.em.createQuery("SELECT e FROM " + this.getEntityClass().getName() + " e WHERE e." + columnName + "=:value", this.getEntityClass())
+                .setParameter("value", value);
+
+        return queryGetSingleResultOrNull(query);
+    }
+
     public TDto getItem(Integer id) {
         TDto item = this.toDto(this.get(id));
 
@@ -51,6 +68,13 @@ public abstract class RepositoryBase<T extends EntityBase<TDto>, TDto extends It
     public List<T> getMultiple(List<Integer> ids) {
         TypedQuery<T> query = this.em.createQuery("SELECT e FROM " + this.getEntityClass().getName() + " e WHERE e.id in :ids", this.getEntityClass())
                 .setParameter("ids", ids);
+
+        return query.getResultList();
+    }
+
+    public List<T> getMultipleByColumn(String columnName, List<String> values) {
+        TypedQuery<T> query = this.em.createQuery("SELECT e FROM " + this.getEntityClass().getName() + " e WHERE e." + columnName + " in :values", this.getEntityClass())
+                .setParameter("values", values);
 
         return query.getResultList();
     }
