@@ -1,5 +1,6 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
+import com.kumuluz.ee.cors.annotations.CrossOrigin;
 import net.bobnar.marketplace.catalog.services.config.ServiceConfig;
 import net.bobnar.marketplace.catalog.services.utils.DatabaseHelper;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -19,6 +20,7 @@ import java.util.*;
 @Tag(name = "Debug", description = "Debugging interface")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@CrossOrigin(name="debug", allowOrigin = "*", exposedHeaders = "X-Total-Count", supportedMethods = "GET, HEAD, PUT, POST, OPTIONS, DELETE")
 public class DebugController {
 
     @Inject
@@ -32,7 +34,7 @@ public class DebugController {
     @Operation(
             summary = "Set the state of this service instance as broken",
             description = "Set the state of this service instance as broken. Used to debug if the cluster will heal itself.",
-            hidden = true
+            hidden = false // true
     )
     public Response debugBreakInstance() {
         serviceConfig.disable();

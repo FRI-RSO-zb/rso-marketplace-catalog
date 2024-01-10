@@ -25,7 +25,7 @@ public abstract class CRUDControllerBase<T extends EntityBase<TDto>, TDto extend
     protected final String MetricsUpdateItemOperationName = "update_item";
     protected final String MetricsDeleteItemOperationName = "delete_item";
 
-    protected Response respondGetQueryItemsResponse(Integer limit, Integer offset, String where, @Context UriInfo uriInfo) {
+    protected Response respondGetQueryItemsResponse(Integer limit, Integer offset, String where, String order, @Context UriInfo uriInfo) {
         QueryParameters query = this.getRequestQuery(uriInfo);
         List<TDto> items = getMainRepository().findItems(query);
         int allItemsCount = getMainRepository().countQueriedItems(query);

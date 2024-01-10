@@ -1,5 +1,6 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
+import com.kumuluz.ee.cors.annotations.CrossOrigin;
 import com.kumuluz.ee.logs.cdi.Log;
 import net.bobnar.marketplace.catalog.services.repositories.RepositoryBase;
 import net.bobnar.marketplace.catalog.services.repositories.SellersRepository;
@@ -44,6 +45,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
+@CrossOrigin(name="sellers", allowOrigin = "*", exposedHeaders = "X-Total-Count", supportedMethods = "GET, HEAD, PUT, POST, OPTIONS, DELETE")
 public class SellersController extends CRUDControllerBase<SellerEntity, Seller> {
     private final String MetricsPrefix = "sellers_";
     @Inject @Metric(name=MetricsPrefix+MetricsCounterName)
@@ -97,6 +99,14 @@ public class SellersController extends CRUDControllerBase<SellerEntity, Seller> 
                     examples = { @ExampleObject(name="Empty", value=""), @ExampleObject(name="Filter by id", value="id:eq:1") }
             )
             String where,
+            @QueryParam("order")
+            @Parameter(
+                    name = "order",
+                    in = ParameterIn.QUERY,
+                    description = "Sorting strategy",
+                    examples = { @ExampleObject(name="Empty", value=""), @ExampleObject(name="Sort by brand id", value="brandId ASC") }
+            )
+            String order,
             @QueryParam("ids")
             @Parameter(
                     name = "ids",
@@ -110,7 +120,7 @@ public class SellersController extends CRUDControllerBase<SellerEntity, Seller> 
             return respondGetItemsByIds(ids);
         }
 
-        return respondGetQueryItemsResponse(limit, offset, where, uriInfo);
+        return respondGetQueryItemsResponse(limit, offset, where, order, uriInfo);
     }
 
     @GET

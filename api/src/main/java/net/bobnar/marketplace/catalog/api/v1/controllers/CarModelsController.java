@@ -1,5 +1,6 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
+import com.kumuluz.ee.cors.annotations.CrossOrigin;
 import com.kumuluz.ee.logs.cdi.Log;
 import net.bobnar.marketplace.catalog.services.repositories.CarModelsRepository;
 import net.bobnar.marketplace.catalog.services.repositories.RepositoryBase;
@@ -15,6 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -38,6 +40,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
+@CrossOrigin(name="models", allowOrigin = "*", exposedHeaders = "X-Total-Count", supportedMethods = "GET, HEAD, PUT, POST, OPTIONS, DELETE")
 public class CarModelsController extends CRUDControllerBase<CarModelEntity, CarModel> {
     private final String MetricsPrefix = "models_";
     @Inject @Metric(name=MetricsPrefix+MetricsCounterName)
@@ -91,6 +94,14 @@ public class CarModelsController extends CRUDControllerBase<CarModelEntity, CarM
                     example = "primaryIdentifier:eq:golf"
             )
             String where,
+            @QueryParam("order")
+            @Parameter(
+                    name = "order",
+                    in = ParameterIn.QUERY,
+                    description = "Sorting strategy",
+                    examples = { @ExampleObject(name="Empty", value=""), @ExampleObject(name="Sort by brand id", value="brandId ASC") }
+            )
+            String order,
             @QueryParam("ids")
             @Parameter(
                     name = "ids",
@@ -104,7 +115,7 @@ public class CarModelsController extends CRUDControllerBase<CarModelEntity, CarM
             return respondGetItemsByIds(ids);
         }
 
-        return respondGetQueryItemsResponse(limit, offset, where, uriInfo);
+        return respondGetQueryItemsResponse(limit, offset, where, order, uriInfo);
     }
 
     @GET

@@ -66,7 +66,7 @@ public class DatabaseHelper {
                     Object val = item.get(field.getName());
 
                     if (val instanceof String) {
-                        values.add("'" + val + "'");
+                        values.add("'" + ((String) val).replace("\n", "\\n") + "'");
                     } else if (val != null) {
                         values.add(val.toString());
                     } else {

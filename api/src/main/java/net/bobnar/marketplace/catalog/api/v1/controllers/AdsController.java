@@ -1,5 +1,6 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
+import com.kumuluz.ee.cors.annotations.CrossOrigin;
 import com.kumuluz.ee.logs.cdi.Log;
 import net.bobnar.marketplace.catalog.services.repositories.AdsRepository;
 import net.bobnar.marketplace.catalog.services.repositories.RepositoryBase;
@@ -38,6 +39,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
+@CrossOrigin(name="ads", allowOrigin = "*", exposedHeaders = "X-Total-Count", supportedMethods = "GET, HEAD, PUT, POST, OPTIONS, DELETE")
 public class AdsController extends CRUDControllerBase<AdEntity, Ad> {
     private final String MetricsPrefix = "ads_";
     @Inject @Metric(name=MetricsPrefix+MetricsCounterName)
@@ -91,6 +93,14 @@ public class AdsController extends CRUDControllerBase<AdEntity, Ad> {
                     examples = { @ExampleObject(name="Empty", value=""), @ExampleObject(name="Filter by seller", value="sellerId:eq:1") }
             )
             String where,
+            @QueryParam("order")
+            @Parameter(
+                    name = "order",
+                    in = ParameterIn.QUERY,
+                    description = "Sorting strategy",
+                    examples = { @ExampleObject(name="Empty", value=""), @ExampleObject(name="Sort by brand id", value="brandId ASC"), @ExampleObject(name="Sort by brand id", value="model.brand.name ASC")  }
+            )
+            String order,
             @QueryParam("ids")
             @Parameter(
                     name = "ids",
@@ -128,7 +138,7 @@ public class AdsController extends CRUDControllerBase<AdEntity, Ad> {
             return respondBadRequestWithError("Sources is set, but source ids is empty.");
         }
 
-        return respondGetQueryItemsResponse(limit, offset, where, uriInfo);
+        return respondGetQueryItemsResponse(limit, offset, where, order, uriInfo);
     }
 
     @GET
