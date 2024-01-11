@@ -24,30 +24,17 @@ kumuluzee:
     defaults:
       offset: 0
       limit: 20
-#    scanning:
-#      optimize: false
-#    schema:
-#      include-scalars: true
-#      include-schema-definition: true
-#      include-directives: true
-#      include-introspection-types: true
-
-#  security:
-#    keycloak:
-#      enabled: false
-#      json: '{"realm": "marketplace-test",
-#              "bearer-only": true,
-#              "auth-server-url": "https://localhost:8080/auth",
-#              "ssl-required": "external",
-#              "resource": "marketplace-catalogue"}'
 
   datasources:
     - jndi-name: jdbc/MarketplaceCatalogDS
 #      connection-url: jdbc:postgresql://n1.ts.bobnar.net:15432/marketplace_catalogue_db
 #      connection-url: jdbc:postgresql://localhost:15432/marketplace_catalog_db
-      connection-url: jdbc:postgresql://n2.ts.bobnar.net:15432/testing
-      username: pgadmin
-      password: 7dvJANTz2xdvfGuM7vpS
+#      connection-url: jdbc:postgresql://n2.ts.bobnar.net:15432/testing
+      connection-url: jdbc:postgresql://catalog-db.postgres.database.azure.com:5432/marketplace_catalog
+#      username: pgadmin
+      username: frirsomarketplacecatalogadmin
+#      password: 7dvJANTz2xdvfGuM7vpS
+      password: 'SL5RiMPnt7BwkWhF6H3YhUgUAzureProductionDeployment'
 #      username: marketplace_catalogue_user
 #      password: vbuJ8as4C4rbpS2RYmx3
 #      password: vbuJ8as4C4rbpS2RYmx3LocalDevelopment
@@ -57,10 +44,27 @@ kumuluzee:
     server:
       http:
         port: 8081
-#      auth:
-#        public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnOTgnGBISzm3pKuG8QXMVm6eEuTZx8Wqc8D9gy7vArzyE5QC/bVJNFwlz...
-#        issuer: http://id.bobnar.net
 
+  logs:
+    config-file: '<?xml version="1.0" encoding="UTF-8"?>
+                            <Configuration name="comments">
+                                <Appenders>
+                                    <Console name="console" target="SYSTEM_OUT">
+                                        <PatternLayout pattern="%d %p %marker %m %X %ex %n"/>
+                                    </Console>
+                                    <Socket name="logstash" host="32f52281-cf62-403d-8213-98d4e483f235-ls.logit.io"
+                                    port="24380" protocol="udp">
+                                        <JSONLayout complete="false" compact="true" eventEol="true" charset="UTF-8" properties="true"/>
+                                    </Socket>
+                                </Appenders>
+                                <Loggers>
+                                    <!-- Default logger -->
+                                    <Root level="all">
+                                        <AppenderRef ref="console" level="info" />
+                                        <AppenderRef ref="logstash" level="trace" />
+                                    </Root>
+                                </Loggers>
+                            </Configuration>'
 
   health:
     logs:
@@ -71,9 +75,9 @@ kumuluzee:
     checks:
       disk-space-health-check:
         threshold: 10000
-#      data-source-health-check:
-#        - jndi-name: jdbc/MarketplaceCatalogDS
-#          type: liveness
+      data-source-health-check:
+        - jndi-name: jdbc/MarketplaceCatalogDS
+          type: liveness
 
   metrics:
     servlet:
@@ -85,3 +89,7 @@ kumuluzee:
         url-pattern: /v1/ads/*
       - name: sellersEndpoint
         url-pattern: /v1/sellers/*
+      - name: brandsEndpoint
+        url-pattern: /v1/brands/*
+      - name: modelsEndpoint
+        url-pattern: /v1/models/*

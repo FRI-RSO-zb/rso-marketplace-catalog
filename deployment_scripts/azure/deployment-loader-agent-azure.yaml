@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name:  marketplace-loader-agent
-        image: zigabobnar/fri-rso-loader-agent:2023-12-06-22-45-06
+        image: zigabobnar/fri-rso-loader-agent:2024-01-11-00-08-44
         imagePullPolicy: Always
         ports:
           - name:  server

@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name:  marketplace-catalog
-        image:  zigabobnar/fri-rso-marketplace-catalog:main-d34e8fe2f8c9afad9d24e720abb4adb9743ee100
+        image:  zigabobnar/fri-rso-marketplace-catalog:main-83179f9856f987dfb22ab6750f0d856ae60586bf
         imagePullPolicy: Always
         ports:
           - name:  server
@@ -37,11 +37,11 @@ spec:
           - name: KUMULUZEE_SERVER_BASEURL
             value: https://catalog.<DEPLOYMENT_ID>.northeurope.aksapp.io/
           - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
-            value:  jdbc:postgresql://<POSTGRES_DB_NAME>.postgres.database.azure.com:5432/marketplace_catalog
+            value:  jdbc:postgresql://catalog-db.postgres.database.azure.com:5432/marketplace_catalog
           - name: KUMULUZEE_DATASOURCES0_USERNAME
-            value: frirsomarketplacecatalogadmin
+            value: frirsomarketplacecatalogadminproduction
           - name: KUMULUZEE_DATASOURCES0_PASSWORD
-            value: 'SL5RiMPnt7BwkWhF6H3YhUgUAzureDeployment'
+            value: 'SL5RiMPnt7BwkWhF6H3YhUgUAzureProductionDeployment'
           - name: KUMULUZEE_DATASOURCES0_POOL_MAXSIZE
             value: '8'
         livenessProbe:

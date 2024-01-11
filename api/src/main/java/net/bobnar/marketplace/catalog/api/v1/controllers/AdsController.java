@@ -32,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Log
 @Path("ads")
@@ -41,6 +42,8 @@ import java.util.List;
 @ApplicationScoped
 @CrossOrigin(name="ads", allowOrigin = "*", exposedHeaders = "X-Total-Count", supportedMethods = "GET, HEAD, PUT, POST, OPTIONS, DELETE")
 public class AdsController extends CRUDControllerBase<AdEntity, Ad> {
+    private Logger log = Logger.getLogger(AdsController.class.getName());
+
     private final String MetricsPrefix = "ads_";
     @Inject @Metric(name=MetricsPrefix+MetricsCounterName)
     private ConcurrentGauge itemsCounter;

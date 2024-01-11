@@ -1,6 +1,7 @@
 package net.bobnar.marketplace.catalog.api.v1.controllers;
 
 import com.kumuluz.ee.cors.annotations.CrossOrigin;
+import com.kumuluz.ee.logs.cdi.Log;
 import net.bobnar.marketplace.common.controllers.InfoControllerBase;
 import net.bobnar.marketplace.common.dtos.v1.info.Info;
 import net.bobnar.marketplace.common.dtos.v1.info.VersionInfo;
@@ -17,8 +18,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.logging.Logger;
 
 
+@Log
 @Path("info")
 @ApplicationScoped
 @Tag(name = "Info", description = "Deployment instance information")
@@ -26,6 +29,8 @@ import java.util.*;
 @Consumes(MediaType.APPLICATION_JSON)
 @CrossOrigin(name="info", allowOrigin = "*", exposedHeaders = "X-Total-Count", supportedMethods = "GET, HEAD, PUT, POST, OPTIONS, DELETE")
 public class InfoController extends InfoControllerBase {
+    private Logger log = Logger.getLogger(InfoController.class.getName());
+
     @GET
     @PermitAll
     @Operation(

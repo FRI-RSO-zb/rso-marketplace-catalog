@@ -34,6 +34,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 @Log
@@ -44,6 +45,8 @@ import java.util.List;
 @ApplicationScoped
 @CrossOrigin(name="brands", allowOrigin = "*", exposedHeaders = "X-Total-Count", supportedMethods = "GET, HEAD, PUT, POST, OPTIONS, DELETE")
 public class CarBrandsController extends CRUDControllerBase<CarBrandEntity, CarBrand> {
+    private Logger log = Logger.getLogger(CarBrandsController.class.getName());
+
     private final String MetricsPrefix = "brands_";
     @Inject @Metric(name=MetricsPrefix+MetricsCounterName)
     private ConcurrentGauge itemsCounter;

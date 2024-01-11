@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 @Log
@@ -47,6 +48,8 @@ import java.util.List;
 @ApplicationScoped
 @CrossOrigin(name="sellers", allowOrigin = "*", exposedHeaders = "X-Total-Count", supportedMethods = "GET, HEAD, PUT, POST, OPTIONS, DELETE")
 public class SellersController extends CRUDControllerBase<SellerEntity, Seller> {
+    private Logger log = Logger.getLogger(SellersController.class.getName());
+
     private final String MetricsPrefix = "sellers_";
     @Inject @Metric(name=MetricsPrefix+MetricsCounterName)
     private ConcurrentGauge itemsCounter;

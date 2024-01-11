@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: marketplace-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+#  rules:
+#    - http:
+#        paths:
+#          - path: /catalog(/|$)(.*)
+#            pathType: ImplementationSpecific
+#            backend:
+#              service:
+#                name: marketplace-catalog
+#                port:
+#                  number: 8801
+#          - path: /loader(/|$)(.*)
+#            pathType: ImplementationSpecific
+#            backend:
+#              service:
+#                name: marketplace-loader-agent
+#                port:
+#                  number: 8003
+
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: marketplace-catalog
+#  annotations:
+#    kubernetes.io/ingress.class: addon-http-application-routing
+#spec:
+#  rules:
+#  - host: catalog.<DEPLOYMENT_ID>.northeurope.aksapp.io
+#    http:
+#      paths:
+#      - path: /
+#        pathType: Prefix
+#        backend:
+#          service:
+#            name: marketplace-catalog
+#            port:
+#              number: 8801

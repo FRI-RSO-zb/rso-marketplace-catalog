@@ -13,6 +13,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 @Path("debug")
@@ -22,6 +23,7 @@ import java.util.*;
 @Consumes(MediaType.APPLICATION_JSON)
 @CrossOrigin(name="debug", allowOrigin = "*", exposedHeaders = "X-Total-Count", supportedMethods = "GET, HEAD, PUT, POST, OPTIONS, DELETE")
 public class DebugController {
+    private Logger log = Logger.getLogger(DebugController.class.getName());
 
     @Inject
     private ServiceConfig serviceConfig;

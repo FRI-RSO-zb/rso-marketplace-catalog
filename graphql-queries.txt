@@ -1,0 +1,25 @@
+query MyQuery {
+  brands {
+    result {
+      name
+      models {
+        result {
+          ...CarModelFragment
+        }
+      }
+    }
+  }
+}
+
+fragment CarModelFragment on CarModel {
+  name
+  ads {
+    result {
+      title
+      id
+      source
+      sourceId
+      otherData
+    }
+  }
+}
